@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sacred Sikkim - Monastery Tourism Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Enhanced Login Page Styles with More Animations */
+        .login-container {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23667eea" stop-opacity="0.1"/><stop offset="100%" stop-color="%23764ba2" stop-opacity="0.05"/></radialGradient></defs><rect width="100" height="100" fill="url(%23a)"/></svg>') repeat;
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            animation: loginSlideIn 1s ease-out, pulse 3s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            animation: shine 3s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2); }
+            50% { box-shadow: 0 25px 60px rgba(102, 126, 234, 0.3); }
+        }
+
+        @keyframes loginSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .login-logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: logoGlow 2s ease-in-out infinite alternate, bounce 2s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes logoGlow {
+            from { filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.3)); }
+            to { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.6)); }
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Rest of the styles remain similar but with enhancements for smoothness */
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 0.3rem;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            color: #666;
+            position: relative;
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .auth-tab:hover {
+            transform: translateY(-1px);
+            color: #667eea;
+        }
+
+        .auth-form {
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: formSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes formSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background: #fff;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #667eea;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 1.5rem;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px) scale(1);
+        }
+
+        .social-login {
+            margin: 1.5rem 0;
+        }
+
+        .social-login-divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .social-login-divider::before,
+        .social-login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        .social-login-divider span {
+            padding: 0 1rem;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            font-weight: 500;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-btn {
+            color: #db4437;
+            border-color: #db4437;
+        }
+
+        .google-btn:hover {
+            background: #db4437;
+            color: white;
+        }
+
+        .facebook-btn {
+            color: #3b5998;
+            border-color: #3b5998;
+        }
+
+        .facebook-btn:hover {
+            background: #3b5998;
+            color: white;
+        }
+
+        .error-message,
+        .success-message {
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+            animation: messageSlide 0.5s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #363;
+            border: 1px solid #cfc;
+        }
+
+        /* Enhanced Main App Styles */
+        .main-app {
+            display: none;
+            animation: appFadeIn 1s ease-out;
+        }
+
+        @keyframes appFadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            background: linear-gradient(45deg, white, #f0f8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fff, #f0f8ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            min-width: 200px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+            animation: dropdownSlide 0.3s ease-out;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.7rem 1rem;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+            color: #667eea;
+        }
+
+        /* Enhanced Hero Section with Parallax-like Effect */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+            position: relative;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(102, 126, 234, 0.2);
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #f0f8ff, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+            position: relative;
+        }
+
+        .hero-welcome {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3)); }
+            to { filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.6)); }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 1s both;
+        }
+
+        /* Main Content with Rounded Top */
+        .main-content {
+            background: white;
+            border-radius: 30px 30px 0 0;
+            margin-top: -2rem;
+            padding: 3rem 0;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Enhanced Tabs with Glow */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            background: #f8f9fa;
+            border-radius: 25px;
+            padding: 0.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            border: none;
+            background: transparent;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            color: #666;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-1px);
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Enhanced Event Cards with Hover Lift */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(102, 126, 234, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .event-card:hover::before {
+            opacity: 1;
+        }
+
+        .event-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .event-image::before {
+            content: '🏯';
+            font-size: 4rem;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        .event-card:hover .event-image::before {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+
+        .event-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .event-card:hover .event-badge {
+            transform: scale(1.05);
+        }
+
+        .event-content {
+            padding: 1.5rem;
+        }
+
+        .event-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .event-monastery {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .event-description {
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .event-features {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .feature-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: transform 0.3s ease;
+        }
+
+        .event-card:hover .feature-tag {
+            transform: translateY(-1px);
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-decoration: none;
+            text-align: center;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        /* Enhanced Filters with Active Glow */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 0.7rem 1.5rem;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Enhanced Stats with Flip Animation */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            perspective: 1000px;
+        }
+
+        .stat-card:hover {
+            transform: rotateY(5deg) rotateX(5deg);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            animation: countUp 2s ease-out;
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Enhanced Booking Modal with Smooth Entry */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            animation: modalBackdrop 0.3s ease-out;
+        }
+
+        @keyframes modalBackdrop {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #667eea;
+            transform: rotate(90deg);
+        }
+
+        /* Enhanced Participation Cards */
+        .participation-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .participation-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .participation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .participation-card:hover::before {
+            opacity: 1;
+        }
+
+        .participation-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4);
+        }
+
+        .participation-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .participation-card:hover .participation-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .participation-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .participation-description {
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* Enhanced Badges with 3D Flip */
+        .badges-collection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .badge-item {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-style: preserve-3d;
+        }
+
+        .badge-item:hover {
+            transform: translateY(-5px) rotateY(10deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .badge-item.earned {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            animation: earnedGlow 1s ease-out;
+        }
+
+        @keyframes earnedGlow {
+            0% { box-shadow: 0 0 0 rgba(102, 126, 234, 0); }
+            50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.5); }
+            100% { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+        }
+
+        .badge-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .badge-item.earned .badge-name {
+            color: white;
+        }
+
+        /* Enhanced Community Posts with Card Flip */
+        .community-posts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .community-post {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .community-post:hover {
+            transform: translateY(-5px) rotateX(5deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .community-post:hover .post-avatar {
+            transform: scale(1.1);
+        }
+
+        .post-info h4 {
+            margin-bottom: 0.2rem;
+            color: #333;
+        }
+
+        .post-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .post-content {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .community-post:hover .post-image {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+
+        /* Language Toggle (Simple Dropdown) */
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: rgba(255,255,255,0.9);
+            padding: 0.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Responsive Enhancements */
+        @media (max-width: 768px) {
+            .login-card {
+                margin: 1rem;
+                padding: 2rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .tabs {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+
+            .filter-btn {
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+            }
+
+            .event-actions {
+                flex-direction: column;
+            }
+
+            .hero {
+                background-attachment: scroll;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Notification Enhancement */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: -400px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 10000;
+            max-width: 350px;
+            transition: right 0.5s ease-out;
+        }
+
+        .notification.show {
+            right: 20px;
+        }
+
+        /* Progress Bar Animation */
+        .progress-bar {
+            background: #e9ecef;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease-out;
+            animation: progressFill 2s ease-out;
+        }
+
+        @keyframes progressFill {
+            from { width: 0%; }
+            to { width: 60%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Toggle -->
+    <div class="language-toggle" onclick="toggleLanguage()">
+        🌐 EN <span style="font-size: 0.8rem;">▼</span>
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-logo">🏔️</div>
+            <h1 class="login-title">Sacred Sikkim</h1>
+            <p class="login-subtitle">Experience the spiritual journey of monastery tourism</p>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="password-group">
+                        <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">👁️</button>
+                    </div>
+                </div>
+                <div class="forgot-password">
+                    <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+                </div>
+                <button type="submit" class="login-btn">
+                    <span class="btn-text">Sign In</span>
+                    <span class="btn-loading" style="display: none;"><span class="loading"></span> Signing In...</span>
+                </button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" name="fullName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email Address</label>
+                    <input type="email" id="signupEmail" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPhone">Phone Number</label>
+                    <input type="tel" id="signupPhone" name="phone" placeholder="Enter your phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <div class="password-group">
+                        <input type="password" id="signupPassword" name="password" placeholder="Create a password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('signupPassword')">👁️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="password-group">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">👁️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="terms" name="terms" required style="margin-right: 0.5rem;">
+                        I agree to the <a href="#" style="color: #667eea;">Terms & Conditions</a> and <a href="#" style="color: #667eea;">Privacy Policy</a>
+                    </label>
+                </div>
+                <button type="submit" class="login-btn">
+                    <span class="btn-text">Create Account</span>
+                    <span class="btn-loading" style="display: none;"><span class="loading"></span> Creating Account...</span>
+                </button>
+            </form>
+
+            <!-- Social Login -->
+            <div class="social-login">
+                <div class="social-login-divider">
+                    <span>or continue with</span>
+                </div>
+                <div class="social-buttons">
+                    <button class="social-btn google-btn" onclick="socialLogin('google')">
+                        📧 Google
+                    </button>
+                    <button class="social-btn facebook-btn" onclick="socialLogin('facebook')">
+                        📘 Facebook
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <nav class="nav">
+                    <a href="#" class="logo">🏔️ Sacred Sikkim</a>
+                    <ul class="nav-links">
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#participate">Participate</a></li>
+                        <li><a href="#community">Community</a></li>
+                        <li><a href="#badges">Badges</a></li>
+                    </ul>
+                    <div class="user-menu">
+                        <div class="user-info" onclick="toggleDropdown()">
+                            <div class="user-avatar" id="userAvatar">U</div>
+                            <span id="userName">User</span>
+                            <span>▼</span>
+                        </div>
+                        <div id="dropdownMenu" class="dropdown-menu">
+                            <a href="#" class="dropdown-item" onclick="showProfile()">👤 My Profile</a>
+                            <a href="#" class="dropdown-item" onclick="showBookings()">📅 My Bookings</a>
+                            <a href="#" class="dropdown-item" onclick="showBadges()">🏆 My Badges</a>
+                            <a href="#" class="dropdown-item" onclick="showSettings()">⚙️ Settings</a>
+                            <hr style="margin: 0.5rem 0;">
+                            <a href="#" class="dropdown-item" onclick="logout()">🚪 Logout</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-welcome" id="welcomeMessage">Welcome back!</div>
+                <h1>Discover Sacred Sikkim</h1>
+                <p>Experience ancient monasteries, spiritual festivals, and timeless traditions</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Stats -->
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number">25+</div>
+                        <div class="stat-label">Monasteries</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">150+</div>
+                        <div class="stat-label">Events Yearly</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">5000+</div>
+                        <div class="stat-label">Happy Visitors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Languages Supported</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="showTab('events')">📅 Events</button>
+                    <button class="tab-btn" onclick="showTab('participate')">🤝 Participate</button>
+                    <button class="tab-btn" onclick="showTab('community')">💬 Community</button>
+                    <button class="tab-btn" onclick="showTab('badges')">🏆 Badges</button>
+                </div>
+
+                <!-- Events Tab -->
+                <div id="events" class="tab-content active">
+                    <div class="filters">
+                        <button class="filter-btn active" onclick="filterEvents('all')">All Events</button>
+                        <button class="filter-btn" onclick="filterEvents('cultural')">Cultural</button>
+                        <button class="filter-btn" onclick="filterEvents('spiritual')">Spiritual</button>
+                        <button class="filter-btn" onclick="filterEvents('festival')">Festivals</button>
+                        <button class="filter-btn" onclick="filterEvents('meditation')">Meditation</button>
+                    </div>
+
+                    <div class="events-grid" id="eventsGrid">
+                        <div class="event-card" data-category="cultural festival">
+                            <div class="event-image">
+                                <div class="event-badge">Cultural</div>
+                            </div>
+                            <div class="event-content">
+                                <h3 class="event-title">Cham Dance Festival</h3>
+                                <div class="event-monastery">📍 Rumtek Monastery</div>
+                                <div class="event-date">🗓️ December 15-17, 2025 | 10:00 AM - 6:00 PM</div>
+                                <p class="event-description">Witness the mesmerizing masked dances performed by monks, representing the victory of good over evil in vibrant traditional costumes.</p>
+                                <div class="event-features">
+                                    <span class="feature-tag">Photography Allowed</span>
+                                    <span class="feature-tag">Guided Tour</span>
+                                    <span class="feature-tag">Food Stalls</span>
+                                </div>
+                                <div class="event-actions">
+                                    <button class="btn btn-primary" onclick="openBookingModal('Cham Dance Festival', 'Rumtek Monastery')">Book Now</button>
+                                    <button class="btn btn-secondary" onclick="toggleVirtualRsvp(this)">Virtual RSVP</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-card" data-category="spiritual meditation">
+                            <div class="event-image">
+                                <div class="event-badge">Spiritual</div>
+                            </div>
+                            <div class="event-content">
+                                <h3 class="event-title">Silent Meditation Retreat</h3>
+                                <div class="event-monastery">📍 Enchey Monastery</div>
+                                <div class="event-date">🗓️ January 20-22, 2026 | 5:00 AM - 8:00 PM</div>
+                                <p class="event-description">Join a transformative 3-day silent meditation retreat guided by experienced monks in the serene mountain environment.</p>
+                                <div class="event-features">
+                                    <span class="feature-tag">Accommodation</span>
+                                    <span class="feature-tag">Vegetarian Meals</span>
+                                    <span class="feature-tag">Limited Capacity</span>
+                                </div>
+                                <div class="event-actions">
+                                    <button class="btn btn-primary" onclick="openBookingModal('Silent Meditation Retreat', 'Enchey Monastery')">Book Now</button>
+                                    <button class="btn btn-secondary" onclick="toggleVirtualRsvp(this)">Virtual RSVP</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-card" data-category="cultural festival">
+                            <div class="event-image">
+                                <div class="event-badge">Festival</div>
+                            </div>
+                            <div class="event-content">
+                                <h3 class="event-title">Losar (Tibetan New Year)</h3>
+                                <div class="event-monastery">📍 Pemayangtse Monastery</div>
+                                <div class="event-date">🗓️ February 10-12, 2026 | 6:00 AM - 10:00 PM</div>
+                                <p class="event-description">Celebrate the Tibetan New Year with traditional prayers, cultural performances, and authentic Tibetan cuisine.</p>
+                                <div class="event-features">
+                                    <span class="feature-tag">Cultural Show</span>
+                                    <span class="feature-tag">Traditional Food</span>
+                                    <span class="feature-tag">Souvenir Shop</span>
+                                </div>
+                                <div class="event-actions">
+                                    <button class="btn btn-primary" onclick="openBookingModal('Losar (Tibetan New Year)', 'Pemayangtse Monastery')">Book Now</button>
+                                    <button class="btn btn-secondary" onclick="toggleVirtualRsvp(this)">Virtual RSVP</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-card" data-category="spiritual">
+                            <div class="event-image">
+                                <div class="event-badge">Spiritual</div>
+                            </div>
+                            <div class="event-content">
+                                <h3 class="event-title">Evening Prayer Ceremony</h3>
+                                <div class="event-monastery">📍 Tashiding Monastery</div>
+                                <div class="event-date">🗓️ Every Friday | 6:00 PM - 8:00 PM</div>
+                                <p class="event-description">Join the evening prayer sessions with chanting monks and experience the peaceful ambiance of this sacred place.</p>
+                                <div class="event-features">
+                                    <span class="feature-tag">Weekly Event</span>
+                                    <span class="feature-tag">Free Entry</span>
+                                    <span class="feature-tag">English Translation</span>
+                                </div>
+                                <div class="event-actions">
+                                    <button class="btn btn-primary" onclick="openBookingModal('Evening Prayer Ceremony', 'Tashiding Monastery')">Book Now</button>
+                                    <button class="btn btn-secondary" onclick="toggleVirtualRsvp(this)">Virtual RSVP</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-card" data-category="cultural">
+                            <div class="event-image">
+                                <div class="event-badge">Cultural</div>
+                            </div>
+                            <div class="event-content">
+                                <h3 class="event-title">Monastery Architecture Tour</h3>
+                                <div class="event-monastery">📍 Multiple Monasteries</div>
+                                <div class="event-date">🗓️ Every Saturday | 9:00 AM - 5:00 PM</div>
+                                <p class="event-description">Guided tour exploring the unique architecture, art, and historical significance of Sikkim's most important monasteries.</p>
+                                <div class="event-features">
+                                    <span class="feature-tag">Expert Guide</span>
+                                    <span class="feature-tag">Transport Included</span>
+                                    <span class="feature-tag">Lunch Provided</span>
+                                </div>
+                                <div class="event-actions">
+                                    <button class="btn btn-primary" onclick="openBookingModal('Monastery Architecture Tour', 'Multiple Monasteries')">Book Now</button>
+                                    <button class="btn btn-secondary" onclick="toggleVirtualRsvp(this)">Virtual RSVP</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-card" data-category="festival cultural">
+                            <div class="event-image">
+                                <div class="event-badge">Festival</div>
+                            </div>
+                            <div class="event-content">
+                                <h3 class="event-title">Buddha Purnima Celebration</h3>
+                                <div class="event-monastery">📍 Do-Drul Chorten</div>
+                                <div class="event-date">🗓️ May 15, 2026 | 5:00 AM - 10:00 PM</div>
+                                <p class="event-description">Commemorate Lord Buddha's birth, enlightenment, and death with special prayers, meditation sessions, and cultural programs.</p>
+                                <div class="event-features">
+                                    <span class="feature-tag">All Day Event</span>
+                                    <span class="feature-tag">Cultural Program</span>
+                                    <span class="feature-tag">Community Feast</span>
+                                </div>
+                                <div class="event-actions">
+                                    <button class="btn btn-primary" onclick="openBookingModal('Buddha Purnima Celebration', 'Do-Drul Chorten')">Book Now</button>
+                                    <button class="btn btn-secondary" onclick="toggleVirtualRsvp(this)">Virtual RSVP</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Participate Tab -->
+                <div id="participate" class="tab-content">
+                    <div class="participation-options">
+                        <div class="participation-card">
+                            <div class="participation-icon">🙏</div>
+                            <h3 class="participation-title">Virtual Participation</h3>
+                            <p class="participation-description">Join live streams of festivals and ceremonies from anywhere in the world. Experience the spiritual energy remotely.</p>
+                            <button class="btn btn-primary" onclick="showVirtualOptions()">Join Virtual Events</button>
+                        </div>
+
+                        <div class="participation-card">
+                            <div class="participation-icon">🤝</div>
+                            <h3 class="participation-title">Volunteer Program</h3>
+                            <p class="participation-description">Help during festivals, assist visitors, and contribute to monastery maintenance. Make a meaningful impact.</p>
+                            <button class="btn btn-primary" onclick="openVolunteerForm()">Volunteer Now</button>
+                        </div>
+
+                        <div class="participation-card">
+                            <div class="participation-icon">💝</div>
+                            <h3 class="participation-title">Digital Donations</h3>
+                            <p class="participation-description">Support monastery maintenance, monk education, and cultural preservation through secure online donations.</p>
+                            <button class="btn btn-primary" onclick="openDonationForm()">Donate Now</button>
+                        </div>
+
+                        <div class="participation-card">
+                            <div class="participation-icon">🏨</div>
+                            <h3 class="participation-title">Custom Packages</h3>
+                            <p class="participation-description">Book complete experiences with accommodation, guided tours, meals, and transportation included.</p>
+                            <button class="btn btn-primary" onclick="openPackageForm()">View Packages</button>
+                        </div>
+                    </div>
+
+                    <!-- Additional Features -->
+                    <div style="background: #f8f9fa; border-radius: 20px; padding: 2rem; margin-top: 2rem;">
+                        <h3 style="text-align: center; margin-bottom: 2rem; color: #333;">Special Offerings</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                            <div style="background: white; padding: 1.5rem; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🌟</div>
+                                <h4>Monastery Homestay</h4>
+                                <p style="color: #666; font-size: 0.9rem;">Stay with local families near monasteries</p>
+                            </div>
+                            <div style="background: white; padding: 1.5rem; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🚌</div>
+                                <h4>Transport Service</h4>
+                                <p style="color: #666; font-size: 0.9rem;">Comfortable transport to remote monasteries</p>
+                            </div>
+                            <div style="background: white; padding: 1.5rem; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2.5rem; margin-bottom: 1rem;">📱</div>
+                                <h4>Mobile App</h4>
+                                <p style="color: #666; font-size: 0.9rem;">Offline maps and real-time notifications</p>
+                            </div>
+                            <div style="background: white; padding: 1.5rem; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🌍</div>
+                                <h4>Multi-Language</h4>
+                                <p style="color: #666; font-size: 0.9rem;">Support in 12+ languages</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Tab -->
+                <div id="community" class="tab-content">
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <h2>Community Wall</h2>
+                        <p style="color: #666;">Share your monastery experiences and connect with fellow travelers</p>
+                        <button class="btn btn-primary" onclick="openShareForm()" style="margin-top: 1rem;">Share Your Experience</button>
+                    </div>
+
+                    <div class="community-posts">
+                        <div class="community-post">
+                            <div class="post-header">
+                                <div class="post-avatar">R</div>
+                                <div class="post-info">
+                                    <h4>Rajesh Sharma</h4>
+                                    <p>2 days ago • Rumtek Monastery</p>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                The Cham Dance Festival was absolutely mesmerizing! The monks' dedication and the spiritual energy was incredible. Highly recommend staying for the entire ceremony.
+                            </div>
+                            <div class="post-image">📸</div>
+                            <div style="display: flex; gap: 1rem; color: #666; font-size: 0.9rem;">
+                                <span>❤️ 24 likes</span>
+                                <span>💬 8 comments</span>
+                                <span>🔄 3 shares</span>
+                            </div>
+                        </div>
+
+                        <div class="community-post">
+                            <div class="post-header">
+                                <div class="post-avatar">M</div>
+                                <div class="post-info">
+                                    <h4>Maya Thapa</h4>
+                                    <p>5 days ago • Enchey Monastery</p>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                Just completed the 3-day silent retreat. It was challenging but transformative. The monks were incredibly supportive and the mountain views during meditation were breathtaking. 🏔️
+                            </div>
+                            <div class="post-image">🧘</div>
+                            <div style="display: flex; gap: 1rem; color: #666; font-size: 0.9rem;">
+                                <span>❤️ 31 likes</span>
+                                <span>💬 12 comments</span>
+                                <span>🔄 7 shares</span>
+                            </div>
+                        </div>
+
+                        <div class="community-post">
+                            <div class="post-header">
+                                <div class="post-avatar">A</div>
+                                <div class="post-info">
+                                    <h4>Alex Thompson</h4>
+                                    <p>1 week ago • Pemayangtse Monastery</p>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                Losar celebrations were amazing! The traditional food was delicious and I learned so much about Tibetan culture. The monks were so welcoming to foreign visitors.
+                            </div>
+                            <div class="post-image">🎭</div>
+                            <div style="display: flex; gap: 1rem; color: #666; font-size: 0.9rem;">
+                                <span>❤️ 18 likes</span>
+                                <span>💬 6 comments</span>
+                                <span>🔄 2 shares</span>
+                            </div>
+                        </div>
+
+                        <div class="community-post">
+                            <div class="post-header">
+                                <div class="post-avatar">S</div>
+                                <div class="post-info">
+                                    <h4>Sunil Rai</h4>
+                                    <p>1 week ago • Tashiding Monastery</p>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                Volunteered during the Buddha Purnima celebration. Such a rewarding experience! Helped with crowd management and got to interact with pilgrims from all over the world.
+                            </div>
+                            <div class="post-image">🙏</div>
+                            <div style="display: flex; gap: 1rem; color: #666; font-size: 0.9rem;">
+                                <span>❤️ 42 likes</span>
+                                <span>💬 15 comments</span>
+                                <span>🔄 9 shares</span>
+                            </div>
+                        </div>
+
+                        <div class="community-post">
+                            <div class="post-header">
+                                <div class="post-avatar">P</div>
+                                <div class="post-info">
+                                    <h4>Priya Gurung</h4>
+                                    <p>2 weeks ago • Do-Drul Chorten</p>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                First time participating virtually in the morning prayers. The livestream quality was excellent and I felt connected despite being in Delhi. Thank you for this wonderful feature! 💻🙏
+                            </div>
+                            <div class="post-image">💻</div>
+                            <div style="display: flex; gap: 1rem; color: #666; font-size: 0.9rem;">
+                                <span>❤️ 27 likes</span>
+                                <span>💬 9 comments</span>
+                                <span>🔄 4 shares</span>
+                            </div>
+                        </div>
+
+                        <div class="community-post">
+                            <div class="post-header">
+                                <div class="post-avatar">K</div>
+                                <div class="post-info">
+                                    <h4>Karma Lepcha</h4>
+                                    <p>3 weeks ago • Multiple Monasteries</p>
+                                </div>
+                            </div>
+                            <div class="post-content">
+                                Completed the monastery architecture tour. The guide was incredibly knowledgeable about the history and symbolism. Perfect for anyone interested in Buddhist art and culture.
+                            </div>
+                            <div class="post-image">🏯</div>
+                            <div style="display: flex; gap: 1rem; color: #666; font-size: 0.9rem;">
+                                <span>❤️ 35 likes</span>
+                                <span>💬 11 comments</span>
+                                <span>🔄 6 shares</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badges Tab -->
+                <div id="badges" class="tab-content">
+                    <div style="text-align: center; margin-bottom: 3rem;">
+                        <h2>Your Monastery Journey</h2>
+                        <p style="color: #666; margin-bottom: 1rem;">Collect digital badges as you explore Sikkim's monasteries</p>
+                        <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 1rem 2rem; border-radius: 25px; display: inline-block;">
+                            🏆 Level 3 Explorer • <span id="badgeCount">8</span>/25 Badges Earned
+                        </div>
+                    </div>
+
+                    <div class="badges-collection">
+                        <div class="badge-item earned">
+                            <div class="badge-icon">🎭</div>
+                            <div class="badge-name">Festival Attendee</div>
+                        </div>
+                        <div class="badge-item earned">
+                            <div class="badge-icon">🧘</div>
+                            <div class="badge-name">Meditation Master</div>
+                        </div>
+                        <div class="badge-item earned">
+                            <div class="badge-icon">📸</div>
+                            <div class="badge-name">Photo Enthusiast</div>
+                        </div>
+                        <div class="badge-item earned">
+                            <div class="badge-icon">🤝</div>
+                            <div class="badge-name">Community Helper</div>
+                        </div>
+                        <div class="badge-item earned">
+                            <div class="badge-icon">🌟</div>
+                            <div class="badge-name">First Timer</div>
+                        </div>
+                        <div class="badge-item earned">
+                            <div class="badge-icon">📚</div>
+                            <div class="badge-name">Culture Seeker</div>
+                        </div>
+                        <div class="badge-item earned">
+                            <div class="badge-icon">💝</div>
+                            <div class="badge-name">Generous Donor</div>
+                        </div>
+                        <div class="badge-item earned">
+                            <div class="badge-icon">🌐</div>
+                            <div class="badge-name">Virtual Explorer</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">👑</div>
+                            <div class="badge-name">Monastery Master</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🏔️</div>
+                            <div class="badge-name">Mountain Pilgrim</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🎨</div>
+                            <div class="badge-name">Art Appreciator</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🌅</div>
+                            <div class="badge-name">Dawn Prayer</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">📿</div>
+                            <div class="badge-name">Prayer Wheel Turner</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🏮</div>
+                            <div class="badge-name">Lantern Festival</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🕊️</div>
+                            <div class="badge-name">Peace Seeker</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">📖</div>
+                            <div class="badge-name">Scripture Reader</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🌸</div>
+                            <div class="badge-name">Spring Visitor</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">❄️</div>
+                            <div class="badge-name">Winter Warrior</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🎯</div>
+                            <div class="badge-name">Goal Achiever</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">👥</div>
+                            <div class="badge-name">Group Leader</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🌙</div>
+                            <div class="badge-name">Night Ceremony</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">💎</div>
+                            <div class="badge-name">Precious Visitor</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🔔</div>
+                            <div class="badge-name">Bell Ringer</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">🌈</div>
+                            <div class="badge-name">Rainbow Bridge</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon">⭐</div>
+                            <div class="badge-name">Rising Star</div>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8f9fa; border-radius: 20px; padding: 2rem; margin-top: 3rem; text-align: center;">
+                        <h3 style="margin-bottom: 1rem;">Next Badge Challenge</h3>
+                        <p style="color: #666; margin-bottom: 1.5rem;">Visit 3 more monasteries to unlock the "Mountain Pilgrim" badge!</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <p style="font-weight: 600; color: #667eea;">Progress: 6/10 monasteries visited</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle" style="margin-bottom: 1.5rem;">Book Event</h2>
+            
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nationality">Nationality</label>
+                    <select id="nationality" name="nationality">
+                        <option value="indian">Indian</option>
+                        <option value="nepal">Nepal</option>
+                        <option value="bhutan">Bhutan</option>
+                        <option value="china">China</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="participants">Number of Participants</label>
+                    <select id="participants" name="participants">
+                        <option value="1">1 Person</option>
+                        <option value="2">2 People</option>
+                        <option value="3">3 People</option>
+                        <option value="4">4 People</option>
+                        <option value="5+">5+ People</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accommodation">Accommodation Required?</label>
+                    <select id="accommodation" name="accommodation">
+                        <option value="no">No, I have accommodation</option>
+                        <option value="monastery">Monastery guest house</option>
+                        <option value="homestay">Local homestay</option>
+                        <option value="hotel">Hotel recommendation</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transport">Transport Needed?</label>
+                    <select id="transport" name="transport">
+                        <option value="no">No, I have transport</option>
+                        <option value="shared">Shared taxi</option>
+                        <option value="private">Private vehicle</option>
+                        <option value="pickup">Pick-up service</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="language">Preferred Language for Guide</label>
+                    <select id="language" name="language">
+                        <option value="english">English</option>
+                        <option value="hindi">Hindi</option>
+                        <option value="nepali">Nepali</option>
+                        <option value="tibetan">Tibetan</option>
+                        <option value="local">Local language</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dietary">Dietary Restrictions</label>
+                    <select id="dietary" name="dietary">
+                        <option value="none">No restrictions</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="jain">Jain food</option>
+                        <option value="other">Other (please specify in special requests)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="specialRequests">Special Requests or Medical Conditions</label>
+                    <textarea id="specialRequests" name="specialRequests" rows="3" placeholder="Any special requirements, accessibility needs, or medical conditions we should know about..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="terms" name="terms" required style="margin-right: 0.5rem;">
+                        I agree to monastery rules, dress code, and photography guidelines
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="newsletter" name="newsletter" style="margin-right: 0.5rem;">
+                        Subscribe to monastery event updates and newsletters
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Confirm Booking & Generate QR Ticket
+                </button>
+            </form>
+            
+            <div id="successMessage" class="success-message">
+                🎉 Booking Confirmed! Your QR ticket has been sent to your email. 
+                <br>You'll receive reminders before the event.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let users = {}; // In-memory user storage (note: resets on page reload)
+        let isLoggedIn = false;
+
+        // Language Toggle (stub for now, changes text)
+        function toggleLanguage() {
+            showNotification('🌐 Language switched to Hindi (feature enhanced in future updates)');
+        }
+
+        // Authentication functions
+        function switchTab(tabName) {
+            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Form').classList.add('active');
+            
+            hideMessages();
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+
+        function showMessage(message, type) {
+            hideMessages();
+            const messageDiv = document.getElementById(type + 'Message');
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        function showForgotPassword() {
+            showMessage('Password reset feature will be available soon!', 'success');
+        }
+
+        function socialLogin(provider) {
+            showMessage(`${provider} login will be available soon!`, 'success');
+        }
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const btnText = this.querySelector('.btn-text');
+            const btnLoading = this.querySelector('.btn-loading');
+            
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-flex';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Check if user exists (demo credentials or stored)
+                if ((email === 'demo@sacredsikkim.com' && password === 'demo123') || users[email]?.password === password) {
+                    // Successful login
+                    currentUser = users[email] || {
+                        email: email,
+                        fullName: 'Demo User',
+                        phone: '+91 9876543210'
+                    };
+                    
+                    loginUser(currentUser);
+                } else {
+                    // Failed login
+                    showMessage('Invalid email or password. Try demo@sacredsikkim.com / demo123', 'error');
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+                }
+            }, 2000);
+        });
+
+        // Signup form handler - Fixed to ensure it works
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const phone = document.getElementById('signupPhone').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Validation
+            if (!fullName || !email || !phone || !password || !confirmPassword) {
+                showMessage('Please fill all fields!', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match!', 'error');
+                return;
+            }
+            
+            if (users[email]) {
+                showMessage('Email already registered! Please login instead.', 'error');
+                return;
+            }
+            
+            if (!terms) {
+                showMessage('You must agree to the terms and conditions!', 'error');
+                return;
+            }
+            
+            const userData = {
+                fullName: fullName,
+                email: email,
+                phone: phone,
+                password: password
+                // Note: confirmPassword not stored
+            };
+            
+            const btnText = this.querySelector('.btn-text');
+            const btnLoading = this.querySelector('.btn-loading');
+            
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-flex';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Store user data in memory
+                users[email] = userData;
+                currentUser = userData;
+                
+                showMessage('Account created successfully! Logging you in...', 'success');
+                
+                setTimeout(() => {
+                    loginUser(currentUser);
+                }, 1500);
+            }, 2000);
+        });
+
+        function loginUser(user) {
+            isLoggedIn = true;
+            currentUser = user;
+            
+            // Update UI with user info
+            const firstName = user.fullName.split(' ')[0];
+            const avatar = firstName.charAt(0).toUpperCase();
+            
+            document.getElementById('userName').textContent = firstName;
+            document.getElementById('userAvatar').textContent = avatar;
+            document.getElementById('welcomeMessage').textContent = `Welcome back, ${firstName}!`;
+            
+            // Hide login page and show main app
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            // Initialize app
+            initializeApp();
+            showNotification(`🎉 Welcome to Sacred Sikkim, ${firstName}!`);
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            currentUser = null;
+            
+            // Reset forms
+            document.getElementById('loginForm').reset();
+            document.getElementById('signupForm').reset();
+            hideMessages();
+            
+            // Show login page
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'flex';
+            
+            showNotification('👋 Logged out successfully!');
+        }
+
+        // Dropdown menu functions
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('show');
+        }
+
+        function showProfile() {
+            showNotification('👤 Profile management coming soon!');
+            toggleDropdown();
+        }
+
+        function showBookings() {
+            showNotification('📅 Booking history feature coming soon!');
+            toggleDropdown();
+        }
+
+        function showBadges() {
+            showTab('badges');
+            toggleDropdown();
+        }
+
+        function showSettings() {
+            showNotification('⚙️ Settings panel coming soon!');
+            toggleDropdown();
+        }
+
+        // Main app functions
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function filterEvents(category) {
+            const cards = document.querySelectorAll('.event-card');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            cards.forEach(card => {
+                const cardCategories = card.getAttribute('data-category').toLowerCase();
+                if (category === 'all' || cardCategories.includes(category)) {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.5s ease-in-out';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function openBookingModal(eventName, monastery) {
+            if (!isLoggedIn) {
+                showNotification('Please login to book events!');
+                return;
+            }
+            
+            document.getElementById('modalTitle').textContent = `Book: ${eventName}`;
+            document.getElementById('bookingModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            document.querySelector('#bookingModal #successMessage').style.display = 'none';
+            document.getElementById('bookingForm').style.display = 'block';
+        }
+
+        function toggleVirtualRsvp(button) {
+            if (!isLoggedIn) {
+                showNotification('Please login to participate virtually!');
+                return;
+            }
+            
+            if (button.textContent === 'Virtual RSVP') {
+                button.textContent = '✅ Virtual Registered';
+                button.style.background = 'linear-gradient(135deg, #4caf50, #45a049)';
+                button.style.color = 'white';
+                showNotification('✅ Virtual RSVP confirmed! You will receive livestream link via email.');
+            } else {
+                button.textContent = 'Virtual RSVP';
+                button.style.background = '#f8f9fa';
+                button.style.color = '#666';
+                button.style.border = '2px solid #e9ecef';
+            }
+        }
+
+        // Notification with class-based animation
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+        }
+
+        // Participation functions
+        function showVirtualOptions() {
+            if (!isLoggedIn) {
+                showNotification('Please login to access virtual events!');
+                return;
+            }
+            showNotification('🌐 Virtual events portal opening soon! Join our newsletter for updates.');
+        }
+
+        function openVolunteerForm() {
+            if (!isLoggedIn) {
+                showNotification('Please login to volunteer!');
+                return;
+            }
+            showNotification('🤝 Volunteer registration form will be available soon!');
+        }
+
+        function openDonationForm() {
+            if (!isLoggedIn) {
+                showNotification('Please login to make donations!');
+                return;
+            }
+            showNotification('💝 Secure donation portal coming soon! Support monastery preservation.');
+        }
+
+        function openPackageForm() {
+            if (!isLoggedIn) {
+                showNotification('Please login to view packages!');
+                return;
+            }
+            showNotification('🏨 Custom package builder launching soon! Complete monastery experiences.');
+        }
+
+        function openShareForm() {
+            if (!isLoggedIn) {
+                showNotification('Please login to share experiences!');
+                return;
+            }
+            showNotification('📝 Community sharing feature coming soon! Share your monastery journey.');
+        }
+
+        // Booking form submission - Enhanced with validation
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!isLoggedIn) {
+                showNotification('Please login to complete booking!');
+                return;
+            }
+            
+            if (!this.checkValidity()) {
+                showNotification('Please fill all required fields!');
+                return;
+            }
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Processing...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                document.querySelector('#bookingModal #successMessage').style.display = 'block';
+                this.style.display = 'none';
+                
+                const bookingId = 'SK' + Date.now().toString().slice(-6);
+                console.log('Booking confirmed with ID:', bookingId);
+                
+                setTimeout(() => {
+                    this.style.display = 'block';
+                    this.reset();
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    closeModal();
+                }, 3000);
+            }, 2000);
+        });
+
+        // Initialize app
+        function initializeApp() {
+            // Add loading animations to event cards
+            document.querySelectorAll('.event-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+
+            // Progress bar animation
+            const progressFill = document.querySelector('.progress-fill');
+            if (progressFill) {
+                progressFill.style.width = '60%';
+            }
+
+            // Smart notifications
+            setTimeout(() => {
+                if (isLoggedIn) {
+                    showNotification('📅 Reminder: Cham Dance Festival at Rumtek Monastery starts in 2 days!');
+                }
+            }, 5000);
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('dropdownMenu');
+            const userMenu = document.querySelector('.user-menu');
+            
+            if (!userMenu.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookingModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Demo: Auto-fill login form for testing
+            document.getElementById('loginEmail').value = 'demo@sacredsikkim.com';
+            document.getElementById('loginPassword').value = 'demo123';
+        });
+    </script>
+</body>
+</html>
