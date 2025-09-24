@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MysticSikkim - Digital Archives | Sacred Heritage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #fff;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 75%, #7209b7 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Mystical Background Effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            50% { transform: translateY(-100px) rotate(180deg); opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.8) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            text-align: center;
+        }
+
+        .header-content h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #fff, #a78bfa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(167, 139, 250, 0.5);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.7)); }
+            to { filter: drop-shadow(0 0 30px rgba(192, 132, 252, 0.9)); }
+        }
+
+        .header-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            color: #e2e8f0;
+            font-style: italic;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border: 2px solid rgba(167, 139, 250, 0.5);
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-button:hover::before {
+            left: 100%;
+        }
+
+        .nav-button:hover, .nav-button.active {
+            background: linear-gradient(135deg, #a78bfa, #c084fc);
+            border-color: #fff;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(167, 139, 250, 0.4);
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            border: 2px solid rgba(167, 139, 250, 0.5);
+            border-radius: 30px 0 0 30px;
+            width: 350px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            backdrop-filter: blur(10px);
+            placeholder-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-button {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #a78bfa, #c084fc);
+            color: white;
+            border: 2px solid #a78bfa;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            transform: scale(1.05);
+        }
+
+        /* Filter Tags */
+        .filter-tags {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(167, 139, 250, 0.5);
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-tag.active, .filter-tag:hover {
+            background: linear-gradient(135deg, #a78bfa, #c084fc);
+            border-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(167, 139, 250, 0.4);
+        }
+
+        /* Main Content */
+        .content-section {
+            display: none;
+            padding: 2rem 0;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Archive Grid */
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .archive-item {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .archive-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #a78bfa, #c084fc, #e879f9);
+        }
+
+        .archive-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(167, 139, 250, 0.3);
+            border-color: rgba(167, 139, 250, 0.6);
+        }
+
+        .archive-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(192, 132, 252, 0.1));
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a78bfa;
+            font-style: italic;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Real-time Monastery Images */
+        .archive-image.monastery-pemayangtse {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThFEVwAmNW6Yr2fEQm16cjLbfRx4yhU_9NkQ&s');
+        }
+
+        .archive-image.monastery-rumtek {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSY-lIHSBi9cYU9CvgMcrNhZseiP38ILccA7Q&s');
+        }
+
+        .archive-image.monastery-tashiding {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOXw_C2IniRxakpJ4Ws2s3bMVT07uYY8OguA&s');
+        }
+
+        .archive-image.monastery-enchey {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0tFWUlr8WyxFt6P-ESWQ5hjTRbYvP3TgbsA&s');
+        }
+
+        .archive-image.monastery-dubdi {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Dubdi_Monastery_2.jpg/1200px-Dubdi_Monastery_2.jpg');
+        }
+
+        .archive-image.monastery-sangachoeling {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://upload.wikimedia.org/wikipedia/commons/d/d4/Full_view_of_Sanga-Choeling_Monastery.jpg');
+        }
+
+        .archive-image.monastery-ralong {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-CnzPXBHegiQICmM0RG3fM2YQTVyeE-BeWg&s');
+        }
+
+        .archive-image.monastery-phensang {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://upload.wikimedia.org/wikipedia/commons/3/3f/Phensong_Monastery.jpg');
+        }
+
+        .archive-image.royal-palace {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7f31W396Lz9nql47qUy9HLzQftujo7Kx6iw&s');
+        }
+
+        .archive-image.cultural-heritage {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.3), rgba(192, 132, 252, 0.2)), 
+                              url('https://images.unsplash.com/photo-1609198092357-8c0c9ab87ad0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1024&q=80');
+        }
+
+        .archive-image.manuscript-scroll {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.4), rgba(192, 132, 252, 0.3)), 
+                              url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtYyaRdBfa1s2Xq30yFUTyo1xrrCE-fjXuOg&s');
+        }
+
+        .archive-image.historical-document {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.4), rgba(192, 132, 252, 0.3)), 
+                              url('https://imgv2-2-f.scribdassets.com/img/document/523055962/original/658d45f566/1?v=1');
+        }
+           .archive-image.Royal Marriage Contracts {
+            background-image: linear-gradient(rgba(167, 139, 250, 0.4), rgba(192, 132, 252, 0.3)), 
+                              url('https://blogs.bl.uk/.a/6a00d8341c464853ef01bb096e9e0a970d-pi');
+           }
+        .archive-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .archive-image::after {
+            content: '📜✨';
+            font-size: 3rem;
+            z-index: 2;
+            position: relative;
+        }
+
+        .archive-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .archive-description {
+            color: #e2e8f0;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .archive-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .archive-date {
+            color: #cbd5e1;
+        }
+
+        .archive-type {
+            background: linear-gradient(135deg, #a78bfa, #c084fc);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Statistics */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #a78bfa, #c084fc);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(167, 139, 250, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3rem;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: #fff;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #a78bfa;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+            transform: scale(1.2);
+        }
+
+        .modal-title {
+            color: #fff;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-info-box {
+            background: rgba(167, 139, 250, 0.1);
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-highlight {
+            background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(192, 132, 252, 0.1));
+            border-left: 4px solid #a78bfa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+
+        /* About Section */
+        .about-content {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+
+        .about-content h2 {
+            background: linear-gradient(45deg, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-content h3 {
+            color: #a78bfa;
+            margin: 1.5rem 0 0.5rem 0;
+        }
+
+        .about-content ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-content li {
+            margin-bottom: 0.5rem;
+            color: #e2e8f0;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #a78bfa;
+            font-size: 1.2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-container {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .search-input {
+                width: 250px;
+            }
+            
+            .archive-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 2rem;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #a78bfa, #c084fc);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 0.5s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 1.5s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 2.5s;"></div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <h1>🌟 MysticSikkim Archives 🏔️</h1>
+                <p>Sacred Manuscripts, Ancient Murals & Mystical Documents</p>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <div class="nav-container">
+                <button class="nav-button active" onclick="showSection('manuscripts')">📜 Manuscripts</button>
+                <button class="nav-button" onclick="showSection('murals')">🎨 Murals & Art</button>
+                <button class="nav-button" onclick="showSection('documents')">📋 Documents</button>
+                <button class="nav-button" onclick="showSection('about')">ℹ️ About</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search sacred archives..." id="searchInput">
+                <button class="search-button" onclick="searchArchives()">🔍 Discover</button>
+            </div>
+            <div class="filter-tags">
+                <span class="filter-tag active" onclick="filterByType('all')">✨ All</span>
+                <span class="filter-tag" onclick="filterByType('Buddhist')">🧘 Buddhist</span>
+                <span class="filter-tag" onclick="filterByType('Royal')">👑 Royal</span>
+                <span class="filter-tag" onclick="filterByType('Religious')">🕉️ Religious</span>
+                <span class="filter-tag" onclick="filterByType('Cultural')">🎭 Cultural</span>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Sacred Manuscripts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">15</div>
+                <div class="stat-label">Mystical Murals</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">25</div>
+                <div class="stat-label">Ancient Documents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">1642</div>
+                <div class="stat-label">Oldest Treasure</div>
+            </div>
+        </div>
+
+        <!-- Manuscripts Section -->
+        <div id="manuscripts" class="content-section active">
+            <h2 class="section-title">📜 Sacred Manuscripts Collection</h2>
+            <div class="archive-grid" id="manuscriptsGrid">
+                <!-- Manuscripts will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Murals Section -->
+        <div id="murals" class="content-section">
+            <h2 class="section-title">🎨 Temple Murals & Divine Art</h2>
+            <div class="archive-grid" id="muralsGrid">
+                <!-- Murals will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Documents Section -->
+        <div id="documents" class="content-section">
+            <h2 class="section-title">📋 Historical Documents</h2>
+            <div class="archive-grid" id="documentsGrid">
+                <!-- Documents will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div id="about" class="content-section">
+            <div class="about-content">
+                <h2>🌟 About MysticSikkim Digital Archives</h2>
+                <p style="margin-bottom: 1.5rem;">Journey through the mystical heritage of Sikkim, where ancient wisdom meets digital preservation. Our archives safeguard the spiritual treasures of the Himalayan kingdom, from sacred Buddhist manuscripts to royal chronicles spanning centuries.</p>
+                
+                <h3>✨ Our Sacred Collection:</h3>
+                <ul style="margin-left: 2rem; margin-bottom: 1.5rem;">
+                    <li><strong>🧘 Buddhist Manuscripts:</strong> Ancient texts from legendary monasteries like Rumtek, Pemayangtse, and Tashiding</li>
+                    <li><strong>👑 Royal Chronicles:</strong> Chogyal dynasty records revealing the kingdom's mystical past</li>
+                    <li><strong>🎨 Temple Art:</strong> Sacred murals, thangkas, and divine artwork from holy sanctuaries</li>
+                    <li><strong>🌸 Cultural Treasures:</strong> Indigenous traditions, festivals, and wisdom of mountain communities</li>
+                </ul>
+
+                <h3>🏔️ Mystical Significance:</h3>
+                <p style="margin-bottom: 1.5rem;">Nestled between Tibet, Bhutan, and Nepal, Sikkim has been a crossroads of spiritual traditions for centuries. Our archives preserve the essence of this sacred land, from the 17th century Namgyal dynasty through its transformation into India's most mystical state.</p>
+
+                <div style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(192, 132, 252, 0.1)); border-left: 4px solid #a78bfa; padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+                    <strong>🌟 Digital Preservation Magic:</strong> Each artifact has been lovingly digitized using cutting-edge technology to preserve Sikkim's spiritual heritage for future generations. These digital treasures are housed in climate-controlled sanctuaries, ensuring their mystical energy endures forever.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for detailed view -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalContent">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for Sikkim archives - Extensive Collection
+        const archiveData = {
+            manuscripts: [
+                // Buddhist Manuscripts
+                {
+                    id: 'ms001',
+                    title: 'Pemayangtse Monastery Chronicles',
+                    description: 'Historical records of Pemayangtse Monastery, one of Sikkim\'s oldest and most important Nyingma Buddhist monasteries, founded in 1705.',
+                    date: '1705-1850',
+                    type: 'Buddhist',
+                    location: 'Pemayangtse Monastery, West Sikkim',
+                    details: 'This collection contains detailed records of the monastery\'s founding, religious ceremonies, and interactions with the Chogyal rulers. Written in classical Tibetan script on traditional paper made from lokta bark.'
+                },
+                {
+                    id: 'ms002',
+                    title: 'Rumtek Monastery Sacred Texts',
+                    description: 'Collection of Buddhist scriptures and commentaries from the seat of the Karmapa lineage in Sikkim.',
+                    date: '1960-1980',
+                    type: 'Buddhist',
+                    location: 'Rumtek Monastery, East Sikkim',
+                    details: 'These texts were brought from Tibet and represent the continuation of the Kagyu Buddhist tradition in Sikkim. Includes rare tantric texts and meditation instructions.'
+                },
+                {
+                    id: 'ms003',
+                    title: 'Tashiding Monastery Foundation Records',
+                    description: 'Sacred texts and historical records from Tashiding, Sikkim\'s most sacred monastery.',
+                    date: '1717-1850',
+                    type: 'Religious',
+                    location: 'Tashiding Monastery, West Sikkim',
+                    details: 'Contains the prophecies of Guru Rinpoche about the monastery\'s sacred significance and detailed records of the annual Bumchu ceremony.'
+                },
+                {
+                    id: 'ms004',
+                    title: 'Enchey Monastery Ritual Texts',
+                    description: 'Collection of ritual manuals and prayer books from Enchey Monastery in Gangtok.',
+                    date: '1909-1950',
+                    type: 'Buddhist',
+                    location: 'Enchey Monastery, Gangtok',
+                    details: 'Detailed instructions for monastery festivals, protective deity rituals, and seasonal ceremonies. Important for understanding Sikkimese Buddhist practices.'
+                },
+                {
+                    id: 'ms005',
+                    title: 'Dubdi Monastery Ancient Texts',
+                    description: 'Original manuscripts from Sikkim\'s first monastery, established in 1701.',
+                    date: '1701-1800',
+                    type: 'Buddhist',
+                    location: 'Dubdi Monastery, Yuksom',
+                    details: 'The oldest monastery manuscripts in Sikkim, containing founding principles of Buddhism in the region and early monastic rules.'
+                },
+                {
+                    id: 'ms006',
+                    title: 'Sangachoeling Prayer Manuscripts',
+                    description: 'Sacred prayer collections from one of Sikkim\'s highest monasteries.',
+                    date: '1697-1850',
+                    type: 'Buddhist',
+                    location: 'Sangachoeling Monastery, West Sikkim',
+                    details: 'High-altitude monastery prayers and texts dealing with meditation practices in extreme conditions and mountain spiritual traditions.'
+                },
+                {
+                    id: 'ms007',
+                    title: 'Ralong Monastery Chronicles',
+                    description: 'Historical records and religious texts from Ralong Monastery.',
+                    date: '1730-1900',
+                    type: 'Buddhist',
+                    location: 'Ralong Monastery, South Sikkim',
+                    details: 'Documents the spread of Kagyu Buddhism in southern Sikkim and interactions with neighboring Bhutanese monasteries.'
+                },
+                {
+                    id: 'ms008',
+                    title: 'Phensang Monastery Manuscripts',
+                    description: 'Rare Nyingma texts from remote North Sikkim monastery.',
+                    date: '1721-1880',
+                    type: 'Buddhist',
+                    location: 'Phensang Monastery, North Sikkim',
+                    details: 'Contains texts on dzogchen meditation and high-level tantric practices, preserved in one of Sikkim\'s most isolated monasteries.'
+                },
+                
+                // Royal Manuscripts
+                {
+                    id: 'ms009',
+                    title: 'Chogyal Phuntsok Namgyal\'s Royal Edicts',
+                    description: 'Official proclamations and administrative orders from the founder of the Namgyal dynasty in Sikkim.',
+                    date: '1642-1670',
+                    type: 'Royal',
+                    location: 'Royal Palace Archives, Gangtok',
+                    details: 'These manuscripts contain the earliest written laws and administrative systems established in Sikkim. They provide insight into the kingdom\'s governance structure and relationship with Tibet.'
+                },
+                {
+                    id: 'ms010',
+                    title: 'Chogyal Tensung Namgyal Court Records',
+                    description: 'Administrative documents from the second Chogyal\'s reign.',
+                    date: '1670-1700',
+                    type: 'Royal',
+                    location: 'Royal Palace Archives, Gangtok',
+                    details: 'Records of territorial expansions, monastery patronage, and early diplomatic relations with Bhutan and Tibet.'
+                },
+                {
+                    id: 'ms011',
+                    title: 'Chogyal Chakdor Namgyal\'s Chronicles',
+                    description: 'Palace records from the third Chogyal including land grants and taxation records.',
+                    date: '1700-1717',
+                    type: 'Royal',
+                    location: 'Royal Palace Archives, Gangtok',
+                    details: 'Documents showing the consolidation of royal power and establishment of administrative districts across Sikkim.'
+                },
+                {
+                    id: 'ms012',
+                    title: 'Royal Marriage Contracts',
+                    description: 'Marriage agreements between Sikkim royalty and neighboring kingdoms.',
+                    date: '1650-1850',
+                    type: 'Royal',
+                    location: 'Royal Palace Archives, Gangtok',
+                    details: 'Diplomatic marriage arrangements with Tibet, Bhutan, and local noble families, showing political alliances through marriage.'
+                },
+                {
+                    id: 'ms013',
+                    title: 'Royal Succession Documents',
+                    description: 'Formal succession records and coronation ceremonies of Sikkim Chogyals.',
+                    date: '1642-1963',
+                    type: 'Royal',
+                    location: 'Royal Palace Archives, Gangtok',
+                    details: 'Detailed records of royal succession practices, coronation rituals, and legitimacy documents for each Chogyal.'
+                },
+                {
+                    id: 'ms014',
+                    title: 'Palace Treasury Records',
+                    description: 'Financial accounts and tribute records from the royal treasury.',
+                    date: '1700-1950',
+                    type: 'Royal',
+                    location: 'Royal Palace Archives, Gangtok',
+                    details: 'Detailed accounts of royal income, monastery donations, trade revenues, and tribute payments to Tibet.'
+                },
+                
+                // Cultural Manuscripts
+                {
+                    id: 'ms015',
+                    title: 'Lepcha Script Documents',
+                    description: 'Rare manuscripts written in the indigenous Lepcha script, documenting native traditions.',
+                    date: '1800-1920',
+                    type: 'Cultural',
+                    location: 'North Sikkim Lepcha communities',
+                    details: 'One of the few surviving collections of Lepcha literature, including creation myths, traditional stories, and early Christian missionary translations.'
+                },
+                {
+                    id: 'ms016',
+                    title: 'Traditional Medicine Manuscripts',
+                    description: 'Ancient Sowa Rigpa (traditional Tibetan medicine) texts used by Sikkim healers.',
+                    date: '1750-1900',
+                    type: 'Cultural',
+                    location: 'Various monasteries across Sikkim',
+                    details: 'Detailed descriptions of medicinal plants found in Sikkim\'s diverse ecosystems, diagnostic methods, and treatment procedures following Tibetan medical traditions.'
+                },
+                {
+                    id: 'ms017',
+                    title: 'Bhutia Folklore Collection',
+                    description: 'Traditional stories and legends of the Bhutia community in Sikkim.',
+                    date: '1750-1950',
+                    type: 'Cultural',
+                    location: 'Various Bhutia settlements',
+                    details: 'Oral traditions transcribed into Tibetan script, including creation myths, hero stories, and moral teachings passed down through generations.'
+                },
+                {
+                    id: 'ms018',
+                    title: 'Nepali Settlement Records',
+                    description: 'Documents recording the migration and settlement of Nepali communities in Sikkim.',
+                    date: '1890-1950',
+                    type: 'Cultural',
+                    location: 'South and West Sikkim',
+                    details: 'Records of Nepali migration patterns, land allocation, and cultural integration in Sikkimese society.'
+                },
+                {
+                    id: 'ms019',
+                    title: 'Festival Calendar Manuscripts',
+                    description: 'Traditional calendars and festival observance guidelines for Sikkim.',
+                    date: '1700-1960',
+                    type: 'Cultural',
+                    location: 'Various monasteries and communities',
+                    details: 'Astronomical calculations, festival dates, and ritual instructions for major Sikkimese celebrations like Losar, Saga Dawa, and Drupka Teshi.'
+                },
+                {
+                    id: 'ms020',
+                    title: 'Traditional Architecture Guides',
+                    description: 'Manuscripts describing traditional Sikkimese building techniques and styles.',
+                    date: '1750-1900',
+                    type: 'Cultural',
+                    location: 'Master builders\' collections',
+                    details: 'Detailed instructions for monastery construction, palace architecture, and traditional house building using local materials and techniques.'
+                },
+                {
+                    id: 'ms021',
+                    title: 'Agricultural Practice Manuals',
+                    description: 'Traditional farming methods and crop cultivation guides for Sikkim\'s terrain.',
+                    date: '1800-1950',
+                    type: 'Cultural',
+                    location: 'Farming communities across Sikkim',
+                    details: 'Specialized knowledge about terraced farming, cardamom cultivation, and adaptation of crops to Sikkim\'s unique altitude zones.'
+                },
+                {
+                    id: 'ms022',
+                    title: 'Trade Route Documentation',
+                    description: 'Records of traditional trade routes between Tibet, Sikkim, and India.',
+                    date: '1650-1950',
+                    type: 'Cultural',
+                    location: 'Merchant family archives',
+                    details: 'Detailed descriptions of trans-Himalayan trade routes, goods traded, and seasonal patterns of commerce through Sikkim.'
+                },
+                {
+                    id: 'ms023',
+                    title: 'Shamanic Bon Texts',
+                    description: 'Pre-Buddhist spiritual texts and shamanic practices preserved in Sikkim.',
+                    date: '1600-1850',
+                    type: 'Religious',
+                    location: 'Remote village collections',
+                    details: 'Rare survival of pre-Buddhist spiritual traditions, including weather control rituals, healing ceremonies, and protective practices.'
+                },
+                {
+                    id: 'ms024',
+                    title: 'Artisan Guild Records',
+                    description: 'Documents from traditional craft guilds including metalworkers and woodcarvers.',
+                    date: '1700-1950',
+                    type: 'Cultural',
+                    location: 'Craft communities in Gangtok and Yuksom',
+                    details: 'Guild regulations, apprenticeship records, and techniques for traditional Sikkimese crafts including thangka painting and metal work.'
+                }
+            ],
+            
+            murals: [
+                // Major Monastery Murals
+                {
+                    id: 'mu001',
+                    title: 'Pemayangtse Temple Wall Paintings',
+                    description: 'Intricate Buddhist murals depicting the life of Buddha and Guru Rinpoche, painted in traditional mineral pigments.',
+                    date: '1705-1750',
+                    type: 'Buddhist',
+                    location: 'Pemayangtse Monastery Main Hall',
+                    details: 'These murals showcase the highest level of Sikkimese Buddhist art, painted by masters from Tibet and Bhutan. They depict various Buddha aspects and protective deities.'
+                },
+                {
+                    id: 'mu002',
+                    title: 'Rumtek Monastery Golden Stupa Paintings',
+                    description: 'Modern Buddhist art created for the 16th Karmapa\'s residence, blending traditional and contemporary styles.',
+                    date: '1960-1970',
+                    type: 'Buddhist',
+                    location: 'Rumtek Monastery Golden Stupa',
+                    details: 'Created by Tibetan refugee artists, these paintings represent the revival of Kagyu artistic traditions in exile while adapting to new materials and techniques.'
+                },
+                {
+                    id: 'mu003',
+                    title: 'Enchey Monastery Protective Deity Murals',
+                    description: 'Powerful paintings of Mahakala and other protective deities guarding the monastery.',
+                    date: '1909-1920',
+                    type: 'Religious',
+                    location: 'Enchey Monastery, Gangtok',
+                    details: 'These fierce deity paintings were created to protect the monastery and its practitioners. They demonstrate the syncretic nature of Sikkimese Buddhism, incorporating Bon elements.'
+                },
+                {
+                    id: 'mu004',
+                    title: 'Tashiding Sacred Chamber Frescoes',
+                    description: 'Holy water chamber paintings depicting the sacred Bumchu ceremony.',
+                    date: '1717-1800',
+                    type: 'Religious',
+                    location: 'Tashiding Monastery Sacred Chamber',
+                    details: 'Mystical paintings surrounding the holy water vessel, showing prophecies and spiritual significance of the annual miracle.'
+                },
+                {
+                    id: 'mu005',
+                    title: 'Dubdi Monastery Founding Murals',
+                    description: 'Historic paintings showing the establishment of Buddhism in Sikkim.',
+                    date: '1701-1750',
+                    type: 'Buddhist',
+                    location: 'Dubdi Monastery, Yuksom',
+                    details: 'Depicts the coronation of first Chogyal and the blessing of Sikkim by Guru Rinpoche, marking the beginning of organized Buddhism.'
+                },
+                {
+                    id: 'mu006',
+                    title: 'Sangachoeling Mountain Deity Art',
+                    description: 'High-altitude monastery paintings showing mountain deities and weather spirits.',
+                    date: '1697-1800',
+                    type: 'Religious',
+                    location: 'Sangachoeling Monastery',
+                    details: 'Unique artwork depicting local mountain spirits integrated into Buddhist iconography, showing religious syncretism.'
+                },
+                {
+                    id: 'mu007',
+                    title: 'Ralong Monastery Kagyu Lineage Paintings',
+                    description: 'Portrait gallery of Kagyu Buddhist masters and teachers.',
+                    date: '1730-1850',
+                    type: 'Buddhist',
+                    location: 'Ralong Monastery Assembly Hall',
+                    details: 'Detailed portraits of lineage holders showing the transmission of Buddhist teachings through generations of masters.'
+                },
+                {
+                    id: 'mu008',
+                    title: 'Royal Chapel Frescoes',
+                    description: 'Private chapel murals commissioned by the Chogyal dynasty for their personal religious practices.',
+                    date: '1850-1900',
+                    type: 'Royal',
+                    location: 'Former Royal Palace, Gangtok',
+                    details: 'These intimate paintings show the personal devotional practices of Sikkim\'s royal family, featuring their patron deities and lineage masters.'
+                },
+                {
+                    id: 'mu009',
+                    title: 'Phensang Monastery Dzogchen Art',
+                    description: 'Esoteric paintings illustrating advanced meditation practices.',
+                    date: '1721-1850',
+                    type: 'Buddhist',
+                    location: 'Phensang Monastery, North Sikkim',
+                    details: 'Sophisticated artwork depicting subtle energy channels and consciousness states used in highest yogic practices.'
+                },
+                {
+                    id: 'mu010',
+                    title: 'Palace Throne Room Decorations',
+                    description: 'Royal ceremonial hall paintings showing Sikkim\'s secular and religious authority.',
+                    date: '1750-1900',
+                    type: 'Royal',
+                    location: 'Royal Palace Throne Room, Gangtok',
+                    details: 'Magnificent murals combining royal iconography with Buddhist symbolism, legitimizing the Chogyal\'s spiritual and temporal power.'
+                },
+                {
+                    id: 'mu011',
+                    title: 'Lingdum Monastery Contemporary Art',
+                    description: 'Modern Buddhist murals created by contemporary Sikkim artists.',
+                    date: '1990-2010',
+                    type: 'Buddhist',
+                    location: 'Lingdum Monastery, East Sikkim',
+                    details: 'Contemporary interpretation of traditional Buddhist themes, showing evolution of Sikkimese religious art in modern times.'
+                },
+                {
+                    id: 'mu012',
+                    title: 'Village Temple Folk Paintings',
+                    description: 'Local community religious art from smaller village temples.',
+                    date: '1800-1950',
+                    type: 'Cultural',
+                    location: 'Various village temples',
+                    details: 'Grassroots religious art showing how Buddhism was interpreted and expressed by local communities across Sikkim.'
+                },
+                {
+                    id: 'mu013',
+                    title: 'Monastery Kitchen Blessing Murals',
+                    description: 'Unique paintings in monastery kitchens invoking blessings for food preparation.',
+                    date: '1750-1900',
+                    type: 'Religious',
+                    location: 'Various monastery kitchens',
+                    details: 'Specialized religious art focused on transforming daily activities into spiritual practice through blessing of food preparation.'
+                },
+                {
+                    id: 'mu014',
+                    title: 'Lepcha Shamanic Cave Paintings',
+                    description: 'Pre-Buddhist indigenous spiritual art found in sacred caves.',
+                    date: '1600-1800',
+                    type: 'Cultural',
+                    location: 'Sacred caves in North Sikkim',
+                    details: 'Rare examples of indigenous Lepcha spiritual art predating Buddhist influence, showing nature worship and shamanic practices.'
+                },
+                {
+                    id: 'mu015',
+                    title: 'Monastery School Teaching Murals',
+                    description: 'Educational paintings used to teach Buddhism to young monks.',
+                    date: '1800-1950',
+                    type: 'Buddhist',
+                    location: 'Various monastery schools',
+                    details: 'Didactic artwork designed for religious education, showing Buddhist stories and moral teachings in accessible visual form.'
+                }
+            ],
+            
+            documents: [
+                // Colonial Period Documents  
+                {
+                    id: 'doc001',
+                    title: 'Treaty of Titalia (1817)',
+                    description: 'Historic agreement between the East India Company and Sikkim, defining boundaries and trade relations.',
+                    date: '1817',
+                    type: 'Royal',
+                    location: 'British India Archives, Sikkim Section',
+                    details: 'This treaty established Sikkim\'s relationship with British India and defined territorial boundaries. It marked the beginning of British influence in Sikkim\'s affairs.'
+                },
+                {
+                    id: 'doc002',
+                    title: 'Darjeeling Grant Documents',
+                    description: 'Records of the territorial grant of Darjeeling to the British East India Company by the Chogyal.',
+                    date: '1835',
+                    type: 'Royal',
+                    location: 'Sikkim State Archives',
+                    details: 'These documents detail the circumstances leading to the grant of Darjeeling territory, including the restoration of the Chogyal after his exile in Tibet.'
+                },
+                {
+                    id: 'doc003',
+                    title: 'British Resident\'s Correspondence',
+                    description: 'Official letters between British political officers and the Sikkim Durbar.',
+                    date: '1888-1947',
+                    type: 'Royal',
+                    location: 'National Archives, New Delhi',
+                    details: 'These letters provide insight into the complex relationship between British India and the Sikkim kingdom, including disputes over Tibet policy.'
+                },
+                {
+                    id: 'doc004',
+                    title: 'Campbell-Namgyal Conflict Records',
+                    description: 'Documents related to the 1849 conflict between British official Archibald Campbell and Sikkim.',
+                    date: '1849-1850',
+                    type: 'Royal',
+                    location: 'British India Archives',
+                    details: 'Records of the diplomatic crisis that led to British military intervention and increased British control over Sikkim affairs.'
+                },
+                {
+                    id: 'doc005',
+                    title: 'Tibet Mission Correspondence',
+                    description: 'Secret diplomatic communications regarding British missions to Tibet through Sikkim.',
+                    date: '1903-1904',
+                    type: 'Royal',
+                    location: 'Foreign Office Archives, London',
+                    details: 'Confidential letters about the Younghusband Expedition to Tibet and Sikkim\'s role as a staging ground for British imperial policy.'
+                },
+                
+                // Religious Documents
+                {
+                    id: 'doc006',
+                    title: 'Monastery Land Records',
+                    description: 'Traditional land ownership documents for various monasteries across Sikkim.',
+                    date: '1700-1950',
+                    type: 'Religious',
+                    location: 'Multiple monastery archives',
+                    details: 'Detailed records of monastic land holdings, taxation arrangements, and the relationship between religious institutions and the state.'
+                },
+                {
+                    id: 'doc007',
+                    title: 'Lama Recognition Certificates',
+                    description: 'Official documents recognizing reincarnate lamas and their authority.',
+                    date: '1750-1960',
+                    type: 'Religious',
+                    location: 'Various monastery archives',
+                    details: 'Formal recognition documents for tulkus (reincarnate lamas) including divination records and confirmation ceremonies.'
+                },
+                {
+                    id: 'doc008',
+                    title: 'Monastery Construction Permits',
+                    description: 'Royal permissions for building new monasteries and expanding existing ones.',
+                    date: '1650-1950',
+                    type: 'Religious',
+                    location: 'Royal Palace and monastery archives',
+                    details: 'Official documents showing royal patronage of Buddhism and regulation of monastery construction throughout Sikkim.'
+                },
+                {
+                    id: 'doc009',
+                    title: 'Religious Festival Calendars',
+                    description: 'Official state calendars marking religious festivals and ceremonies.',
+                    date: '1700-1975',
+                    type: 'Religious',
+                    location: 'Palace and monastery archives',
+                    details: 'Annual religious calendars showing the integration of Buddhist festivals into state governance and public life.'
+                },
+                
+                // Administrative Documents
+                {
+                    id: 'doc010',
+                    title: 'Sikkim Constitution (1974)',
+                    description: 'The final constitution of the Kingdom of Sikkim before integration with India.',
+                    date: '1974',
+                    type: 'Royal',
+                    location: 'Government of Sikkim Archives',
+                    details: 'The last constitutional document of independent Sikkim, establishing democratic reforms while maintaining monarchy.'
+                },
+                {
+                    id: 'doc011',
+                    title: 'Integration Documents (1975)',
+                    description: 'Official papers related to Sikkim\'s merger with India and the end of the monarchy.',
+                    date: '1973-1975',
+                    type: 'Royal',
+                    location: 'Government of Sikkim Archives',
+                    details: 'Historic documents marking the transition from kingdom to Indian state, including referendum results and constitutional changes.'
+                },
+                {
+                    id: 'doc012',
+                    title: 'Census Records (1891-1971)',
+                    description: 'Population surveys conducted during British and post-independence periods.',
+                    date: '1891-1971',
+                    type: 'Royal',
+                    location: 'Government of Sikkim Archives',
+                    details: 'Demographic data showing population changes, ethnic composition, and social changes over eight decades.'
+                },
+                {
+                    id: 'doc013',
+                    title: 'Land Settlement Records',
+                    description: 'Documents establishing land ownership patterns across Sikkim.',
+                    date: '1800-1950',
+                    type: 'Royal',
+                    location: 'Revenue Department Archives',
+                    details: 'Systematic records of land distribution, ownership transfers, and agricultural taxation systems.'
+                },
+                {
+                    id: 'doc014',
+                    title: 'Trade Route Regulations',
+                    description: 'Official rules governing trans-Himalayan trade through Sikkim passes.',
+                    date: '1700-1950',
+                    type: 'Royal',
+                    location: 'Palace Trade Archives',
+                    details: 'Regulations for merchants using Nathu La and Jelephu La passes, including customs duties, permitted goods, and seasonal restrictions.'
+                },
+                {
+                    id: 'doc015',
+                    title: 'Education System Records',
+                    description: 'Documents establishing modern education in Sikkim alongside traditional monastery schools.',
+                    date: '1888-1970',
+                    type: 'Royal',
+                    location: 'Education Department Archives',
+                    details: 'Records showing the introduction of secular education while maintaining Buddhist monastic education systems.'
+                },
+                {
+                    id: 'doc016',
+                    title: 'Medical Service Documents',
+                    description: 'Establishment of modern healthcare alongside traditional medicine.',
+                    date: '1900-1970',
+                    type: 'Royal',
+                    location: 'Health Department Archives',
+                    details: 'Documents showing integration of modern medical services with traditional Tibetan medicine practices.'
+                },
+                {
+                    id: 'doc017',
+                    title: 'Forest Conservation Orders',
+                    description: 'Royal decrees protecting Sikkim\'s forests and wildlife.',
+                    date: '1750-1970',
+                    type: 'Royal',
+                    location: 'Forest Department Archives',
+                    details: 'Early environmental protection measures showing traditional ecological wisdom in governance.'
+                },
+                {
+                    id: 'doc018',
+                    title: 'Mining Rights Documents',
+                    description: 'Permits and regulations for mineral extraction in Sikkim.',
+                    date: '1850-1970',
+                    type: 'Royal',
+                    location: 'Mining Department Archives',
+                    details: 'Documents related to copper mining and other mineral extraction, showing balance between economic development and environmental protection.'
+                },
+                {
+                    id: 'doc019',
+                    title: 'Transportation Development Plans',
+                    description: 'Early infrastructure development documents including road and bridge construction.',
+                    date: '1900-1970',
+                    type: 'Royal',
+                    location: 'Public Works Archives',
+                    details: 'Engineering documents showing how modern infrastructure was developed in Sikkim\'s challenging mountain terrain.'
+                },
+                {
+                    id: 'doc020',
+                    title: 'Diplomatic Correspondence with Bhutan',
+                    description: 'Official letters between Sikkim and Bhutan regarding border and trade issues.',
+                    date: '1650-1950',
+                    type: 'Royal',
+                    location: 'Foreign Affairs Archives',
+                    details: 'Diplomatic exchanges showing the complex relationships between Himalayan kingdoms and dispute resolution mechanisms.'
+                },
+                {
+                    id: 'doc021',
+                    title: 'Tibet Relations Documents',
+                    description: 'Records of Sikkim\'s special relationship with Tibet including religious and political ties.',
+                    date: '1642-1950',
+                    type: 'Royal',
+                    location: 'Palace Foreign Affairs Archives',
+                    details: 'Documents showing Sikkim\'s role as intermediary between Tibet and British India, including spiritual and temporal relationships.'
+                },
+                {
+                    id: 'doc022',
+                    title: 'Immigration and Settlement Policies',
+                    description: 'Regulations governing migration of different ethnic groups to Sikkim.',
+                    date: '1850-1970',
+                    type: 'Royal',
+                    location: 'Home Department Archives',
+                    details: 'Policies managing the demographic changes in Sikkim, including Nepali migration and integration of different communities.'
+                },
+                {
+                    id: 'doc023',
+                    title: 'Cultural Preservation Orders',
+                    description: 'Royal mandates protecting traditional customs, festivals, and practices.',
+                    date: '1700-1970',
+                    type: 'Cultural',
+                    location: 'Cultural Affairs Archives',
+                    details: 'Documents showing state support for preserving traditional culture while adapting to modern changes.'
+                },
+                {
+                    id: 'doc024',
+                    title: 'Judicial System Records',
+                    description: 'Traditional legal system documents and court procedures.',
+                    date: '1650-1970',
+                    type: 'Royal',
+                    location: 'High Court Archives',
+                    details: 'Records of traditional Sikkimese legal system combining Buddhist principles with customary law.'
+                },
+                {
+                    id: 'doc025',
+                    title: 'Agricultural Development Plans',
+                    description: 'Government initiatives to improve farming and introduce new crops.',
+                    date: '1900-1970',
+                    type: 'Royal',
+                    location: 'Agriculture Department Archives',
+                    details: 'Documents showing modernization of agriculture while preserving traditional terraced farming systems.'
+                }
+            ]
+        };
+
+        let currentFilter = 'all';
+        let currentSection = 'manuscripts';
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            populateGrid('manuscripts');
+            createFloatingParticles();
+        });
+
+        // Create additional floating particles
+        function createFloatingParticles() {
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+
+        // Show different sections
+        function showSection(section) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(section).classList.add('active');
+            event.target.classList.add('active');
+            
+            currentSection = section;
+            
+            if (section !== 'about') {
+                populateGrid(section);
+            }
+        }
+
+        // Populate archive grid
+        function populateGrid(section) {
+            const grid = document.getElementById(section + 'Grid');
+            const data = archiveData[section] || [];
+            
+            grid.innerHTML = '';
+            
+            let filteredData = currentFilter === 'all' ? data : data.filter(item => item.type === currentFilter);
+            
+            // Apply search filter if search input is not empty
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (query) {
+                filteredData = filteredData.filter(item => 
+                    item.title.toLowerCase().includes(query) ||
+                    item.description.toLowerCase().includes(query) ||
+                    item.location.toLowerCase().includes(query)
+                );
+            }
+            
+            filteredData.forEach(item => {
+                const itemElement = createArchiveItem(item);
+                grid.appendChild(itemElement);
+            });
+            
+            if (filteredData.length === 0) {
+                grid.innerHTML = '<div class="loading">✨ No mystical treasures found matching the current filter ✨</div>';
+            }
+        }
+
+        // Create archive item element
+        function createArchiveItem(item) {
+            const div = document.createElement('div');
+            div.className = 'archive-item';
+            div.onclick = () => openModal(item);
+            
+            // Determine image class based on item type and title
+            let imageClass = '';
+            if (item.title.includes('Pemayangtse')) {
+                imageClass = 'monastery-pemayangtse';
+            } else if (item.title.includes('Rumtek')) {
+                imageClass = 'monastery-rumtek';
+            } else if (item.title.includes('Tashiding')) {
+                imageClass = 'monastery-tashiding';
+            } else if (item.title.includes('Enchey')) {
+                imageClass = 'monastery-enchey';
+            } else if (item.title.includes('Dubdi')) {
+                imageClass = 'monastery-dubdi';
+            } else if (item.title.includes('Sangachoeling')) {
+                imageClass = 'monastery-sangachoeling';
+            } else if (item.title.includes('Ralong')) {
+                imageClass = 'monastery-ralong';
+            } else if (item.title.includes('Phensang')) {
+                imageClass = 'monastery-phensang';
+            } else if (item.title.includes('Royal') || item.title.includes('Palace') || item.title.includes('Chogyal')) {
+                imageClass = 'royal-palace';
+            } else if (item.type === 'Cultural' || item.title.includes('Lepcha') || item.title.includes('Village')) {
+                imageClass = 'cultural-heritage';
+            } else if (currentSection === 'manuscripts') {
+                imageClass = 'manuscript-scroll';
+            } else if (currentSection === 'documents') {
+                imageClass = 'historical-document';
+            } else {
+                const monasteries = ['monastery-pemayangtse', 'monastery-rumtek', 'monastery-tashiding', 'monastery-enchey', 'monastery-dubdi', 'monastery-sangachoeling', 'monastery-ralong', 'monastery-phensang'];
+                imageClass = monasteries[Math.floor(Math.random() * monasteries.length)];
+            }
+            
+            div.innerHTML = `
+                <div class="archive-image ${imageClass}">
+                    <div style="text-align: center; z-index: 2; position: relative; background: rgba(0,0,0,0.6); padding: 0.5rem; border-radius: 10px; backdrop-filter: blur(5px);">
+                        <div style="font-size: 0.9rem; opacity: 0.9; color: #fff;">🔮 Click to unveil mysteries 🔮</div>
+                    </div>
+                </div>
+                <div class="archive-title">${item.title}</div>
+                <div class="archive-description">${item.description}</div>
+                <div class="archive-meta">
+                    <span class="archive-date">${item.date}</span>
+                    <span class="archive-type">${item.type}</span>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // Filter functionality
+        function filterByType(type) {
+            currentFilter = type;
+            
+            document.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            populateGrid(currentSection);
+        }
+
+        // Search functionality
+        function searchArchives() {
+            populateGrid(currentSection);
+        }
+
+        // Enter key search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchArchives();
+            }
+        });
+
+        // Modal functionality
+        function openModal(item) {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <h2 class="modal-title">${item.title}</h2>
+                <div class="modal-info-box">
+                    <strong>📅 Date:</strong> ${item.date}<br>
+                    <strong>🏷️ Type:</strong> ${item.type}<br>
+                    <strong>📍 Location:</strong> ${item.location}
+                </div>
+                <p style="margin-bottom: 1.5rem;"><strong>🌟 Description:</strong></p>
+                <p style="margin-bottom: 1.5rem;">${item.description}</p>
+                <p style="margin-bottom: 1.5rem;"><strong>📖 Detailed Information:</strong></p>
+                <p style="margin-bottom: 1.5rem;">${item.details}</p>
+                <div class="modal-highlight">
+                    <strong>✨ Sacred Preservation:</strong> This mystical archive item has been lovingly digitized using advanced preservation technology to safeguard Sikkim's spiritual heritage for future generations. The original treasures rest in climate-controlled sanctuaries, ensuring their mystical essence endures through eternity.
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Animate stats on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const statNumbers = document.querySelectorAll('.stat-number');
+                statNumbers.forEach((stat, index) => {
+                    const finalNumber = parseInt(stat.textContent);
+                    stat.textContent = '0';
+                    
+                    setTimeout(() => {
+                        animateNumber(stat, 0, finalNumber, 2000);
+                    }, index * 300);
+                });
+            }, 500);
+        });
+
+        function animateNumber(element, start, end, duration) {
+            const range = end - start;
+            const startTime = Date.now();
+            
+            function updateNumber() {
+                const elapsedTime = Date.now() - startTime;
+                const progress = Math.min(elapsedTime / duration, 1);
+                const easeOutProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+                const currentNumber = Math.floor(start + (range * easeOutProgress));
+                
+                element.textContent = currentNumber;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+            
+            updateNumber();
+        }
+
+        // Add mystical hover effects
+        document.addEventListener('mousemove', function(e) {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                if (Math.random() < 0.02) { // 2% chance per mousemove
+                    particle.style.left = e.clientX + (Math.random() - 0.5) * 100 + 'px';
+                    particle.style.top = e.clientY + (Math.random() - 0.5) * 100 + 'px';
+                }
+            });
+        });
+
+        // Add scroll-triggered animations
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('body::before');
+            if (parallax) {
+                document.body.style.backgroundPosition = `50% ${scrolled * 0.5}px`;
+            }
+        });
+    </script>
+</body>
+</html>
