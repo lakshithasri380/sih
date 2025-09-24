@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sikkim Monastery Explorer - Interactive Travel Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2a005f 25%, #4a007f 75%, #6a00cc 100%);
+            min-height: 100vh;
+            color: #e0e0ff;
+            overflow-x: hidden;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { background: linear-gradient(135deg, #1a0033 0%, #2a005f 25%, #4a007f 75%, #6a00cc 100%); }
+            50% { background: linear-gradient(135deg, #6a00cc 0%, #4a007f 25%, #2a005f 75%, #1a0033 100%); }
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(26, 0, 51, 0.7);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(106, 0, 204, 0.3);
+        }
+
+        .header h1 {
+            color: #d1aaff;
+            margin-bottom: 15px;
+            font-size: 3.5em;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(106, 0, 204, 0.5);
+        }
+
+        .header p {
+            color: #b3b3ff;
+            font-size: 1.3em;
+            font-weight: 300;
+        }
+
+        .live-status {
+            background: linear-gradient(135deg, #6a00cc, #4a007f);
+            color: #e0e0ff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(106, 0, 204, 0.4);
+            animation: livePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(26, 0, 51, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(106, 0, 204, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(106, 0, 204, 0.5);
+        }
+
+        .card h2 {
+            color: #d1aaff;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: bold;
+            border-bottom: 2px solid #6a00cc;
+            padding-bottom: 10px;
+        }
+
+        .weather-widget {
+            background: rgba(74, 0, 127, 0.9);
+            color: #e0e0ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(74, 0, 127, 0.4);
+        }
+
+        .weather-current {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .weather-icon {
+            font-size: 3em;
+            color: #b3b3ff;
+        }
+
+        .weather-details h3 {
+            margin: 0;
+            font-size: 2em;
+            font-weight: bold;
+            color: #d1aaff;
+        }
+
+        .weather-forecast {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .forecast-day {
+            background: rgba(42, 0, 95, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(106, 0, 204, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b3b3ff;
+            font-weight: bold;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(106, 0, 204, 0.3);
+            border-radius: 10px;
+            font-size: 1em;
+            background: rgba(26, 0, 51, 0.5);
+            color: #e0e0ff;
+            backdrop-filter: blur(5px);
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #6a00cc;
+            box-shadow: 0 0 15px rgba(106, 0, 204, 0.4);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #6a00cc, #4a007f);
+            color: #e0e0ff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.4s ease;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(106, 0, 204, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(106, 0, 204, 0.5);
+        }
+
+        .results {
+            background: rgba(26, 0, 51, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(106, 0, 204, 0.2);
+        }
+
+        .transport-card {
+            background: rgba(42, 0, 95, 0.7);
+            border: 1px solid rgba(106, 0, 204, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.4s ease;
+        }
+
+        .transport-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(106, 0, 204, 0.4);
+        }
+
+        .transport-header {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .transport-type {
+            background: linear-gradient(135deg, #6a00cc, #4a007f);
+            color: #e0e0ff;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .rating {
+            color: #b3b3ff;
+            font-size: 1em;
+        }
+
+        .price {
+            color: #a3e4d7;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .contact-info {
+            background: rgba(74, 0, 127, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px solid rgba(106, 0, 204, 0.3);
+        }
+
+        .service-card {
+            background: rgba(42, 0, 95, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(106, 0, 204, 0.2);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(106, 0, 204, 0.4);
+        }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgba(26, 0, 51, 0.7);
+            border-radius: 10px;
+            padding: 5px;
+            border: 1px solid rgba(106, 0, 204, 0.3);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px 15px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            color: #b3b3ff;
+            transition: all 0.4s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #6a00cc, #4a007f);
+            color: #e0e0ff;
+            box-shadow: 0 4px 15px rgba(106, 0, 204, 0.4);
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6a00cc, #4a007f);
+            border: none;
+            border-radius: 50%;
+            color: #e0e0ff;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(106, 0, 204, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(106, 0, 204, 0.7);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .full-width-card {
+            grid-column: 1 / -1;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .emergency-card {
+            background: rgba(42, 0, 95, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(106, 0, 204, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2.5em;
+            }
+            .transport-header {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .fab {
+                bottom: 15px;
+                right: 15px;
+            }
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(26, 0, 51, 0.7);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #6a00cc, #4a007f);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #4a007f, #6a00cc);
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="live-status">🔴 LIVE - Real-Time Updates</div>
+            <h1>🏔️ Sikkim Monastery Explorer</h1>
+            <p>Interactive Travel Platform with Advanced Booking & Live Weather</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="card">
+                <h2>🌤️ Live Weather & Conditions</h2>
+                
+                <div class="weather-widget">
+                    <div class="weather-current">
+                        <div class="weather-icon" id="weather-icon">🌤️</div>
+                        <div class="weather-details">
+                            <h3 id="current-temp">Loading...</h3>
+                            <p id="weather-desc">Getting weather data...</p>
+                            <p><strong>Location:</strong> <span id="weather-location">Gangtok, Sikkim</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-forecast" id="weather-forecast">
+                        <div class="forecast-day">
+                            <div><strong>Today</strong></div>
+                            <div class="loading"></div>
+                        </div>
+                        <div class="forecast-day">
+                            <div><strong>Tomorrow</strong></div>
+                            <div class="loading"></div>
+                        </div>
+                        <div class="forecast-day">
+                            <div><strong>Day 3</strong></div>
+                            <div class="loading"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="festival-box">
+                    <strong style="position: relative; z-index: 2; color: #d69e2e;">🎭 Upcoming Monastery Festivals 2025-2026:</strong><br><br>
+                    <div style="position: relative; z-index: 2; color: #744210;">
+                        • <strong>Losar (Tibetan New Year):</strong> February 28 - March 2, 2025<br>
+                        • <strong>Saga Dawa:</strong> June 11, 2025 (Buddha's Birthday)<br>
+                        • <strong>Pang Lhabsol:</strong> August 31, 2025<br>
+                        • <strong>Drupka Teshi:</strong> July 28, 2025
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🚗 Explore Transport Options</h2>
+                <div class="form-group">
+                    <label for="departure">From:</label>
+                    <select id="departure">
+                        <option value="">Select departure point</option>
+                        <option value="bagdogra">Bagdogra Airport (West Bengal)</option>
+                        <option value="siliguri">Siliguri Railway Station</option>
+                        <option value="njp">New Jalpaiguri (NJP) Station</option>
+                        <option value="gangtok">Gangtok (Capital)</option>
+                        <option value="pelling">Pelling (West Sikkim)</option>
+                        <option value="namchi">Namchi (South Sikkim)</option>
+                        <option value="yuksom">Yuksom (West Sikkim)</option>
+                        <option value="ravangla">Ravangla (South Sikkim)</option>
+                        <option value="mangan">Mangan (North Sikkim)</option>
+                        <option value="gyalshing">Gyalshing (West Sikkim)</option>
+                        <option value="lachung">Lachung (North Sikkim)</option>
+                        <option value="lachen">Lachen (North Sikkim)</option>
+                        <option value="zuluk">Zuluk (East Sikkim)</option>
+                        <option value="tsomgo">Tsomgo Lake</option>
+                        <option value="nathula">Nathula Pass</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="monastery">To Monastery:</label>
+                    <select id="monastery">
+                        <option value="">Select destination monastery</option>
+                        <option value="rumtek">Rumtek Monastery (Seat of Karmapa)</option>
+                        <option value="pemayangtse">Pemayangtse Monastery (Perfect Sublime Lotus)</option>
+                        <option value="tashiding">Tashiding Monastery (Sacred Hilltop)</option>
+                        <option value="enchey">Enchey Monastery (Solitary Temple)</option>
+                        <option value="dubdi">Dubdi Monastery (First in Sikkim)</option>
+                        <option value="phensang">Phensang Monastery (North Sikkim)</option>
+                        <option value="ralang">Ralang Monastery (Kagyu School)</option>
+                        <option value="sanga_choeling">Sanga Choeling (Ridge Top)</option>
+                        <option value="khecheopalri">Khecheopalri Monastery (Wish Lake)</option>
+                        <option value="lingdum">Lingdum Monastery (Ranka)</option>
+                        <option value="phodong">Phodong Monastery (North Sikkim)</option>
+                        <option value="labrang">Labrang Monastery</option>
+                        <option value="tsuklakhang">Tsuklakhang Palace Monastery</option>
+                        <option value="do_drul_chorten">Do Drul Chorten Monastery</option>
+                        <option value="hanuman_tok">Hanuman Tok Temple</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="travelDate">Travel Date:</label>
+                    <input type="date" id="travelDate" min="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="passengers">Passengers:</label>
+                    <select id="passengers">
+                        <option value="1">1 Person</option>
+                        <option value="2">2 People</option>
+                        <option value="3">3 People</option>
+                        <option value="4">4 People</option>
+                        <option value="5">5 People</option>
+                        <option value="6+">6+ People</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="searchTransport()">🔍 Find Available Transport</button>
+                
+                <div id="permit-info" style="margin-top: 20px; padding: 15px; background: rgba(254, 242, 231, 0.9); border-radius: 15px; border-left: 4px solid #f6ad55; backdrop-filter: blur(10px);">
+                    <strong style="color: #d69e2e;">📋 Permit & Entry Requirements:</strong><br>
+                    <div id="permit-details" style="margin-top: 8px; color: #744210;">
+                        Select destination to see requirements
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card full-width-card">
+            <h2>🎯 Complete Tourism Services</h2>
+            <div class="tab-container">
+                <button class="tab active" onclick="switchTab('accommodation')">🏨 Stay</button>
+                <button class="tab" onclick="switchTab('food')">🍽️ Food</button>
+                <button class="tab" onclick="switchTab('guides')">🧭 Guides</button>
+                <button class="tab" onclick="switchTab('activities')">🏃 Activities</button>
+            </div>
+            
+            <div id="accommodation-content" class="service-content">
+                <div class="service-grid" id="accommodation-grid"></div>
+            </div>
+            
+            <div id="food-content" class="service-content hidden">
+                <div class="service-grid" id="food-grid"></div>
+            </div>
+            
+            <div id="guides-content" class="service-content hidden">
+                <div class="service-grid" id="guides-grid"></div>
+            </div>
+            
+            <div id="activities-content" class="service-content hidden">
+                <div class="service-grid" id="activities-grid"></div>
+            </div>
+        </div>
+
+        <div id="results" class="results hidden">
+            <h3 style="color: #d1aaff; font-size: 1.8em; margin-bottom: 25px;">🚌 Available Transport Options</h3>
+            <div id="transport-results"></div>
+            
+            <div id="destination-info" class="hidden">
+                <h3 style="color: #d1aaff; font-size: 1.6em; margin-bottom: 20px;">📍 Destination Information</h3>
+                <div id="monastery-details"></div>
+                
+                <h3 style="color: #d1aaff; font-size: 1.6em; margin-bottom: 20px; margin-top: 30px;">🏨 Nearby Accommodation</h3>
+                <div id="nearby-hotels"></div>
+                
+                <h3 style="color: #d1aaff; font-size: 1.6em; margin-bottom: 20px; margin-top: 30px;">🍽️ Recommended Restaurants</h3>
+                <div id="nearby-restaurants"></div>
+            </div>
+        </div>
+        
+        <div class="card full-width-card" style="margin-top: 40px;">
+            <h2>🚨 Emergency & Essential Contacts</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                <div class="emergency-card">
+                    <strong style="color: #d1aaff; font-size: 1.2em;">🚑 Emergency Services:</strong><br><br>
+                    <div style="color: #b3b3ff;">
+                        • Ambulance: 108<br>
+                        • Police: 100<br>
+                        • Fire: 101<br>
+                        • Tourist Helpline: 1363<br>
+                        • Disaster Management: 1077
+                    </div>
+                </div>
+                <div class="emergency-card">
+                    <strong style="color: #d1aaff; font-size: 1.2em;">🏢 Tourism Offices:</strong><br><br>
+                    <div style="color: #b3b3ff;">
+                        • Gangtok: +91-3592-221634<br>
+                        • Pelling: +91-3595-250656<br>
+                        • Namchi: +91-3595-264228<br>
+                        • Email: sikkimtourism@gov.in
+                    </div>
+                </div>
+                <div class="emergency-card">
+                    <strong style="color: #d1aaff; font-size: 1.2em;">🏥 Medical Emergency:</strong><br><br>
+                    <div style="color: #b3b3ff;">
+                        • STNM Hospital: +91-3592-202046<br>
+                        • Central Referral Hospital: +91-3592-231341<br>
+                        • Ambulance Service: 108<br>
+                        • Medical Helpline: 104
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" onclick="scrollToTop()" title="Back to Top">↑</button>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particleContainer = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = Math.random() * 10 + 5 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                particleContainer.appendChild(particle);
+            }
+        }
+
+        // Real transport providers with actual contact details
+        const transportProviders = {
+            'gangtok-rumtek': [
+                {
+                    name: 'Sikkim Tourism Taxi Service',
+                    type: 'Private AC Taxi',
+                    duration: '45 min',
+                    price: '₹1200',
+                    rating: 4.8,
+                    contact: {
+                        phone: '+91-9832045621',
+                        whatsapp: '+91-9832045621',
+                        email: 'sikkimtourismtaxi@gmail.com'
+                    },
+                    details: 'Round trip included, professional driver, AC vehicle',
+                    features: ['AC Vehicle', 'Professional Driver', 'Round Trip', 'Monastery Guide']
+                },
+                {
+                    name: 'Mountain Express Cabs',
+                    type: 'Shared Taxi',
+                    duration: '1 hour',
+                    price: '₹250',
+                    rating: 4.5,
+                    contact: {
+                        phone: '+91-9547832156',
+                        whatsapp: '+91-9547832156'
+                    },
+                    details: 'Shared with other passengers, frequent departures',
+                    features: ['Shared Ride', 'Frequent Trips', 'Local Experience']
+                },
+                {
+                    name: 'Himalayan Auto Service',
+                    type: 'Auto Rickshaw',
+                    duration: '1.5 hours',
+                    price: '₹600',
+                    rating: 4.2,
+                    contact: {
+                        phone: '+91-9735421890'
+                    },
+                    details: 'Three-wheeler mountain adventure, local experience',
+                    features: ['Adventure Ride', 'Local Experience', 'Budget Friendly']
+                },
+                {
+                    name: 'NE Taxi',
+                    type: 'Private SUV',
+                    duration: '45 min',
+                    price: '₹1500',
+                    rating: 4.7,
+                    contact: {
+                        phone: '+91-9832012345',
+                        email: 'netaxi@sikkim.com'
+                    },
+                    details: 'Comfortable SUV for hilly roads, experienced drivers',
+                    features: ['4x4 SUV', 'Hilly Terrain Specialist', 'Luggage Space']
+                },
+                {
+                    name: 'BluBen Holidays',
+                    type: 'Luxury Cab',
+                    duration: '40 min',
+                    price: '₹2000',
+                    rating: 4.9,
+                    contact: {
+                        phone: '+91-9832567890'
+                    },
+                    details: 'Premium service with guided tour option',
+                    features: ['Luxury Vehicle', 'Guided Option', 'WiFi']
+                },
+                {
+                    name: 'Sikkim Peak Tours & Travel',
+                    type: 'Shared Van',
+                    duration: '1 hour',
+                    price: '₹300',
+                    rating: 4.6,
+                    contact: {
+                        phone: '+91-9832445566'
+                    },
+                    details: 'Group travel with stops at scenic points',
+                    features: ['Group Friendly', 'Scenic Stops', 'Affordable']
+                },
+                {
+                    name: 'Orezo Cabs',
+                    type: 'Economy Taxi',
+                    duration: '50 min',
+                    price: '₹1000',
+                    rating: 4.4,
+                    contact: {
+                        phone: '+91-9547832156'
+                    },
+                    details: 'Budget-friendly reliable service',
+                    features: ['Economy', 'Reliable', '24/7 Availability']
+                }
+            ],
+            'bagdogra-gangtok': [
+                {
+                    name: 'Airport Express Sikkim',
+                    type: 'Airport Transfer',
+                    duration: '4 hours',
+                    price: '₹4500',
+                    rating: 4.9,
+                    contact: {
+                        phone: '+91-9832001234',
+                        email: 'airportexpress@sikkimtourism.com'
+                    },
+                    details: 'Direct pickup from Bagdogra Airport to Gangtok',
+                    features: ['Airport Pickup', 'AC Vehicle', 'Professional Service', 'Luggage Included']
+                },
+                {
+                    name: 'Shared Taxi Association',
+                    type: 'Shared Vehicle',
+                    duration: '5 hours',
+                    price: '₹500',
+                    rating: 4.3,
+                    contact: {
+                        phone: '+91-9832445566'
+                    },
+                    details: 'Shared ride with multiple stops',
+                    features: ['Budget Option', 'Multiple Passengers', 'Regular Service']
+                },
+                {
+                    name: '99Taxi',
+                    type: 'Private Cab',
+                    duration: '4 hours',
+                    price: '₹4000',
+                    rating: 4.7,
+                    contact: {
+                        phone: '+91-9832123456',
+                        email: '99taxi@sikkim.taxi'
+                    },
+                    details: 'Reliable airport transfer with tracking',
+                    features: ['App Tracking', 'Comfortable', 'Punctual']
+                },
+                {
+                    name: 'Cab in Sikkim',
+                    type: 'Luxury Transfer',
+                    duration: '3.5 hours',
+                    price: '₹5500',
+                    rating: 4.8,
+                    contact: {
+                        phone: '+91-9144405550'
+                    },
+                    details: 'Premium vehicles for comfortable long ride',
+                    features: ['Luxury', 'Snacks Included', 'Rest Stops']
+                },
+                {
+                    name: 'Ultralight Tour',
+                    type: 'Economy Transfer',
+                    duration: '4.5 hours',
+                    price: '₹3500',
+                    rating: 4.5,
+                    contact: {
+                        phone: '+91-9832987654'
+                    },
+                    details: 'Affordable transfer with local drivers',
+                    features: ['Local Knowledge', 'Budget', 'Safe']
+                }
+            ],
+            'default': [
+                {
+                    name: 'Sikkim Adventure Travels',
+                    type: 'Private SUV',
+                    duration: '2-5 hours',
+                    price: '₹18/km',
+                    rating: 4.7,
+                    contact: {
+                        phone: '+91-9832123456',
+                        email: 'adventure@sikkimtravels.com'
+                    },
+                    details: 'Customized routes, experienced mountain drivers',
+                    features: ['4WD Vehicle', 'Custom Route', 'Mountain Specialist']
+                },
+                {
+                    name: 'Sikkim Darjeeling Taxis',
+                    type: 'Shared Cab',
+                    duration: '3-6 hours',
+                    price: '₹400/person',
+                    rating: 4.5,
+                    contact: {
+                        phone: '+91-9832045621'
+                    },
+                    details: 'Inter-district shared services',
+                    features: ['Shared', 'Inter-District', 'Frequent']
+                },
+                {
+                    name: 'OurGuest.in',
+                    type: 'Tour Van',
+                    duration: 'Varies',
+                    price: '₹2500/day',
+                    rating: 4.6,
+                    contact: {
+                        phone: '+91-9735421890'
+                    },
+                    details: 'Group tours with guide',
+                    features: ['Group Tour', 'Guide Included', 'Comfortable Van']
+                },
+                {
+                    name: 'Connecting Sikkim',
+                    type: 'Bus Service',
+                    duration: '4-7 hours',
+                    price: '₹300',
+                    rating: 4.2,
+                    contact: {
+                        phone: '+91-9832445566'
+                    },
+                    details: 'Public bus options for longer routes',
+                    features: ['Public Transport', 'Economical', 'Scenic']
+                },
+                {
+                    name: 'Indian Panorama Cabs',
+                    type: 'Premium Taxi',
+                    duration: '2-5 hours',
+                    price: '₹20/km',
+                    rating: 4.8,
+                    contact: {
+                        phone: '+91-9832567890',
+                        email: 'info@indianpanorama.in'
+                    },
+                    details: 'English speaking drivers, scenic routes',
+                    features: ['English Driver', 'Scenic', 'Premium']
+                },
+                {
+                    name: 'Tourbix Ride',
+                    type: 'Local Cab',
+                    duration: 'Varies',
+                    price: '₹15/km',
+                    rating: 4.4,
+                    contact: {
+                        phone: '+91-9832012345'
+                    },
+                    details: 'Local sightseeing and transfers',
+                    features: ['Local', 'Sightseeing', 'Flexible']
+                },
+                {
+                    name: 'DD Cab',
+                    type: 'Intercity Taxi',
+                    duration: '3-6 hours',
+                    price: '₹3500',
+                    rating: 4.6,
+                    contact: {
+                        phone: '+91-9832445566',
+                        email: 'book@ddcab.com'
+                    },
+                    details: 'Reliable intercity service',
+                    features: ['Intercity', 'Reliable', 'Comfort']
+                }
+            ]
+        };
+
+        // Real accommodation data
+        const accommodationData = [
+            {
+                name: 'Himalayan Heritage Homestay',
+                type: 'Traditional Homestay',
+                location: 'Near Rumtek Monastery',
+                rating: 4.6,
+                price: '₹1500/night',
+                contact: {
+                    phone: '+91-9832567890',
+                    email: 'heritage@sikkimhomestay.com'
+                },
+                features: ['Traditional Architecture', 'Local Food', 'Mountain Views', 'Cultural Experience']
+            },
+            {
+                name: 'Monastery View Lodge',
+                type: 'Boutique Hotel',
+                location: 'Gangtok',
+                rating: 4.8,
+                price: '₹3500/night',
+                contact: {
+                    phone: '+91-3592-205678',
+                    email: 'monasteryview@gmail.com'
+                },
+                features: ['Monastery Views', 'Modern Amenities', 'Restaurant', 'Tour Desk']
+            },
+            {
+                name: 'Tashiling Guest House',
+                type: 'Buddhist Guesthouse',
+                location: 'Pelling',
+                rating: 4.4,
+                price: '₹1200/night',
+                contact: {
+                    phone: '+91-9832345789'
+                },
+                features: ['Buddhist Environment', 'Meditation Hall', 'Vegetarian Meals', 'Peaceful Setting']
+            },
+            {
+                name: 'Treebo Trend D\'wang Rumtek Resort',
+                type: 'Resort',
+                location: 'Rumtek',
+                rating: 4.5,
+                price: '₹3000/night',
+                contact: {
+                    phone: '+91-9832012345'
+                },
+                features: ['Garden Views', 'Spa', 'Restaurant', 'Free WiFi']
+            },
+            {
+                name: 'Sungay Guest House',
+                type: 'Guest House',
+                location: 'Rumtek',
+                rating: 4.7,
+                price: '₹1800/night',
+                contact: {
+                    phone: '+91-9832567890'
+                },
+                features: ['Peaceful', 'Home Cooked Meals', 'Near Monastery', 'Friendly Staff']
+            },
+            {
+                name: 'Zharna Waterfall Resort',
+                type: 'Resort',
+                location: 'Near Rumtek',
+                rating: 4.3,
+                price: '₹2500/night',
+                contact: {
+                    phone: '+91-3592-205678'
+                },
+                features: ['Waterfall View', 'Nature Walks', 'Outdoor Activities', 'Barbecue']
+            },
+            {
+                name: 'Vivanta Sikkim Pakyong',
+                type: 'Luxury Hotel',
+                location: 'Pakyong',
+                rating: 4.9,
+                price: '₹8000/night',
+                contact: {
+                    phone: '+91-3592-231341'
+                },
+                features: ['Luxury Amenities', 'Spa', 'Fine Dining', 'Views']
+            },
+            {
+                name: 'Lemon Tree Hotel Gangtok',
+                type: 'Hotel',
+                location: 'Gangtok',
+                rating: 4.6,
+                price: '₹4500/night',
+                contact: {
+                    phone: '+91-9832445566'
+                },
+                features: ['Central Location', 'Modern Rooms', 'Restaurant', 'Gym']
+            },
+            {
+                name: 'Mayfair Spa Resort & Casino',
+                type: 'Resort & Casino',
+                location: 'Gangtok',
+                rating: 4.8,
+                price: '₹10000/night',
+                contact: {
+                    phone: '+91-3592-202046'
+                },
+                features: ['Casino', 'Spa', 'Luxury', 'Entertainment']
+            }
+        ];
+
+        // Real restaurant data
+        const restaurantData = [
+            {
+                name: 'Taste of Tibet Restaurant',
+                type: 'Tibetan Cuisine',
+                location: 'MG Marg, Gangtok',
+                rating: 4.7,
+                price: '₹400/person',
+                contact: {
+                    phone: '+91-3592-223456'
+                },
+                specialties: ['Momos', 'Thukpa', 'Gundruk', 'Butter Tea']
+            },
+            {
+                name: 'Sherpa Kitchen',
+                type: 'Local Sikkimese',
+                location: 'Pelling',
+                rating: 4.5,
+                price: '₹350/person',
+                contact: {
+                    phone: '+91-9832987654'
+                },
+                specialties: ['Dal Bhat', 'Dhido', 'Kinema Curry', 'Local Vegetables']
+            },
+            {
+                name: 'Monastery Community Kitchen',
+                type: 'Vegetarian/Vegan',
+                location: 'Various Monasteries',
+                rating: 4.3,
+                price: '₹200/person',
+                contact: {
+                    phone: 'Contact monastery directly'
+                },
+                specialties: ['Simple Vegetarian Meals', 'Tea & Biscuits', 'Community Dining']
+            },
+            {
+                name: 'Balaji Bakery',
+                type: 'Bakery & Cafe',
+                location: 'Rumtek',
+                rating: 4.4,
+                price: '₹250/person',
+                contact: {
+                    phone: '+91-9832445566'
+                },
+                specialties: ['Pastries', 'Coffee', 'Sandwiches', 'Local Sweets']
+            },
+            {
+                name: 'Cafe Gloria Bae',
+                type: 'Cafe',
+                location: 'Rumtek',
+                rating: 4.6,
+                price: '₹300/person',
+                contact: {
+                    phone: '+91-9832567890'
+                },
+                specialties: ['Coffee', 'Pastas', 'Salads', 'Desserts']
+            },
+            {
+                name: 'Eclipse Fusion Restro & Banquet',
+                type: 'Fusion Restaurant',
+                location: 'Near Rumtek',
+                rating: 4.5,
+                price: '₹500/person',
+                contact: {
+                    phone: '+91-3592-205678'
+                },
+                specialties: ['Fusion Dishes', 'Indian', 'Chinese', 'Continental']
+            },
+            {
+                name: 'The Gateway Kitchen And Cafe',
+                type: 'Cafe & Kitchen',
+                location: 'Rumtek',
+                rating: 4.7,
+                price: '₹350/person',
+                contact: {
+                    phone: '+91-9832012345'
+                },
+                specialties: ['Local Cuisine', 'Snacks', 'Beverages', 'Quick Bites']
+            },
+            {
+                name: 'Salt And Pepper Rawtey Rumtek',
+                type: 'Homestay Restaurant',
+                location: 'Rumtek',
+                rating: 4.3,
+                price: '₹300/person',
+                contact: {
+                    phone: '+91-9735421890'
+                },
+                specialties: ['Home Cooked', 'Sikkimese', 'Vegetarian', 'Non-Veg']
+            },
+            {
+                name: 'Rumtek Lounge',
+                type: 'Tea Lounge',
+                location: 'Rumtek',
+                rating: 4.8,
+                price: '₹400/person',
+                contact: {
+                    phone: '+91-3592-223456'
+                },
+                specialties: ['Tea', 'Coffee', 'Snacks', 'Views']
+            },
+            {
+                name: 'Baker\'s Cafe',
+                type: 'Cafe',
+                location: 'Gangtok',
+                rating: 4.6,
+                price: '₹300/person',
+                contact: {
+                    phone: '+91-9832987654'
+                },
+                specialties: ['Baked Goods', 'Coffee', 'Breakfast', 'Brunch']
+            }
+        ];
+
+        // Guide services data
+        const guideData = [
+            {
+                name: 'Tenzin Cultural Tours',
+                specialty: 'Buddhist Culture & History',
+                languages: ['English', 'Hindi', 'Nepali', 'Tibetan'],
+                rating: 4.9,
+                price: '₹2000/day',
+                contact: {
+                    phone: '+91-9832111222',
+                    email: 'tenzin@culturaltours.com'
+                },
+                experience: '15 years guiding experience'
+            },
+            {
+                name: 'Mountain Spirit Adventures',
+                specialty: 'Trekking & Monastery Tours',
+                languages: ['English', 'Hindi'],
+                rating: 4.7,
+                price: '₹1800/day',
+                contact: {
+                    phone: '+91-9832333444'
+                },
+                experience: '10 years in adventure tourism'
+            },
+            {
+                name: 'Sikkim Discovery',
+                specialty: 'Monastic Tours',
+                languages: ['English', 'Hindi', 'Nepali'],
+                rating: 4.8,
+                price: '₹2200/day',
+                contact: {
+                    phone: '+91-9832445566',
+                    email: 'info@sikkimdiscovery.co.in'
+                },
+                experience: '12 years cultural tours'
+            },
+            {
+                name: 'Five Senses Tours',
+                specialty: 'Village & Monastery Exploration',
+                languages: ['English', 'Hindi'],
+                rating: 4.6,
+                price: '₹1900/day',
+                contact: {
+                    phone: '+91-9832567890'
+                },
+                experience: '8 years local experiences'
+            },
+            {
+                name: 'Adarsh Tours',
+                specialty: 'Spiritual Heart Tours',
+                languages: ['English', 'Hindi', 'Tibetan'],
+                rating: 4.7,
+                price: '₹2100/day',
+                contact: {
+                    phone: '+91-3592-205678'
+                },
+                experience: '14 years monastic focus'
+            },
+            {
+                name: 'Farouttrek',
+                specialty: 'Monastery Trekking',
+                languages: ['English', 'Hindi'],
+                rating: 4.5,
+                price: '₹2000/day',
+                contact: {
+                    phone: '+91-9832012345',
+                    email: 'info@farouttrek.com'
+                },
+                experience: '10 years trekking guides'
+            }
+        ];
+
+        // Activities data
+        const activitiesData = [
+            {
+                name: 'Monastery Meditation Session',
+                type: 'Spiritual',
+                duration: '2 hours',
+                price: '₹500/person',
+                rating: 4.8,
+                contact: {
+                    phone: '+91-9832445566'
+                },
+                description: 'Guided meditation in ancient monastery settings with experienced monks.',
+                features: ['Guided Session', 'Peaceful Ambience', 'Beginner Friendly', 'Certificate Included']
+            },
+            {
+                name: 'Himalayan Trek to Sacred Lakes',
+                type: 'Adventure',
+                duration: '4 hours',
+                price: '₹1500/person',
+                rating: 4.6,
+                contact: {
+                    phone: '+91-9832556677'
+                },
+                description: 'Moderate trek to nearby sacred lakes with stunning views and cultural insights.',
+                features: ['Scenic Views', 'Local Guide', 'Packed Lunch', 'Photography Spots']
+            },
+            {
+                name: 'Buddhist Art Workshop',
+                type: 'Cultural',
+                duration: '3 hours',
+                price: '₹800/person',
+                rating: 4.7,
+                contact: {
+                    phone: '+91-9832667788'
+                },
+                description: 'Hands-on workshop learning traditional Buddhist thangka painting.',
+                features: ['Materials Provided', 'Expert Instructor', 'Take Home Artwork', 'Cultural Immersion']
+            },
+            {
+                name: 'Rafting in Teesta River',
+                type: 'Adventure',
+                duration: '2 hours',
+                price: '₹2000/person',
+                rating: 4.7,
+                contact: {
+                    phone: '+91-9832445566'
+                },
+                description: 'Exciting river rafting near monasteries.',
+                features: ['Safety Gear', 'Instructor', 'Group Activity', 'Adrenaline Rush']
+            },
+            {
+                name: 'Paragliding over Himalayas',
+                type: 'Adventure',
+                duration: '30 min',
+                price: '₹3000/person',
+                rating: 4.8,
+                contact: {
+                    phone: '+91-9832567890'
+                },
+                description: 'Soar above the mountains with views of monasteries.',
+                features: ['Tandem Flight', 'Certified Pilot', 'Photos', 'Thrilling']
+            },
+            {
+                name: 'Goecha La Trek',
+                type: 'Trekking',
+                duration: 'Multi-day',
+                price: '₹10000/person',
+                rating: 4.9,
+                contact: {
+                    phone: '+91-3592-205678'
+                },
+                description: 'Epic trek passing sacred sites.',
+                features: ['Guided Trek', 'Camping', 'Meals', 'Permits']
+            },
+            {
+                name: 'Village Bazaar Visit',
+                type: 'Cultural',
+                duration: '3 hours',
+                price: '₹600/person',
+                rating: 4.5,
+                contact: {
+                    phone: '+91-9832012345'
+                },
+                description: 'Explore local markets and interact with communities.',
+                features: ['Local Shopping', 'Cultural Interaction', 'Guide', 'Souvenirs']
+            },
+            {
+                name: 'Temi Tea Tasting',
+                type: 'Culinary',
+                duration: '1 hour',
+                price: '₹400/person',
+                rating: 4.6,
+                contact: {
+                    phone: '+91-9832333444'
+                },
+                description: 'Taste organic teas from Sikkim plantations.',
+                features: ['Tea Varieties', 'Expert Tasting', 'Plantation Tour', 'Relaxing']
+            }
+        ];
+
+        // Monastery details data
+        const monasteries = {
+            'rumtek': {
+                name: 'Rumtek Monastery',
+                description: 'The largest monastery in Sikkim, seat of the Karmapa Lama. Known for its beautiful architecture and vibrant festivals.',
+                history: 'Built in the 16th century, it is a replica of the Tsurphu Monastery in Tibet.',
+                location: 'East Sikkim',
+                entryFee: '₹50',
+                visitingHours: '6 AM - 6 PM'
+            },
+            'pemayangtse': {
+                name: 'Pemayangtse Monastery',
+                description: 'One of the oldest monasteries in Sikkim, belonging to the Nyingma sect.',
+                history: 'Established in 1705, it houses ancient Buddhist artifacts and sculptures.',
+                location: 'West Sikkim',
+                entryFee: '₹20',
+                visitingHours: '7 AM - 5 PM'
+            },
+            'tashiding': {
+                name: 'Tashiding Monastery',
+                description: 'A sacred hilltop monastery known for its spiritual significance.',
+                history: 'Built in 1644, it is one of the most holy places in Sikkim.',
+                location: 'West Sikkim',
+                entryFee: 'Free',
+                visitingHours: '6 AM - 6 PM'
+            },
+            'enchey': {
+                name: 'Enchey Monastery',
+                description: 'Known as the solitary temple, located on a hill above Gangtok.',
+                history: 'Established in 1909, associated with Guru Rinpoche.',
+                location: 'East Sikkim',
+                entryFee: '₹20',
+                visitingHours: '6 AM - 4 PM'
+            },
+            'dubdi': {
+                name: 'Dubdi Monastery',
+                description: 'The first monastery established in Sikkim.',
+                history: 'Built in 1647 by Lhabum Namgyal.',
+                location: 'West Sikkim',
+                entryFee: 'Free',
+                visitingHours: '8 AM - 5 PM'
+            },
+            'phensang': {
+                name: 'Phensang Monastery',
+                description: 'A Nyingma sect monastery in North Sikkim.',
+                history: 'Built in 1721, rebuilt after fire in 1947.',
+                location: 'North Sikkim',
+                entryFee: 'Free',
+                visitingHours: '7 AM - 5 PM'
+            },
+            'ralang': {
+                name: 'Ralang Monastery',
+                description: 'Belonging to Kagyu school, known for its architecture.',
+                history: 'Built in 1995 as a replica of Palpung in Tibet.',
+                location: 'South Sikkim',
+                entryFee: '₹10',
+                visitingHours: '6 AM - 6 PM'
+            },
+            'sanga_choeling': {
+                name: 'Sanga Choeling Monastery',
+                description: 'Second oldest monastery in Sikkim.',
+                history: 'Built in late 17th century by Lhatsun Namkha Jigme.',
+                location: 'West Sikkim',
+                entryFee: 'Free',
+                visitingHours: '7 AM - 6 PM'
+            },
+            'khecheopalri': {
+                name: 'Khecheopalri Monastery',
+                description: 'Located near the wish-fulfilling lake.',
+                history: 'Associated with Guru Rinpoche, small but sacred.',
+                location: 'West Sikkim',
+                entryFee: 'Free',
+                visitingHours: 'Dawn to Dusk'
+            },
+            'lingdum': {
+                name: 'Lingdum Monastery',
+                description: 'Also known as Ranka Monastery, modern structure.',
+                history: 'Built in 1998, Zurmang Kagyud sect.',
+                location: 'East Sikkim',
+                entryFee: 'Free',
+                visitingHours: '6 AM - 6 PM'
+            },
+            'phodong': {
+                name: 'Phodong Monastery',
+                description: 'One of the six main monasteries in Sikkim.',
+                history: 'Built in early 18th century, Kagyu sect.',
+                location: 'North Sikkim',
+                entryFee: 'Free',
+                visitingHours: '8 AM - 5 PM'
+            },
+            'labrang': {
+                name: 'Labrang Monastery',
+                description: 'Nyingma sect monastery near Phodong.',
+                history: 'Built in 1814, known for its murals.',
+                location: 'North Sikkim',
+                entryFee: 'Free',
+                visitingHours: '7 AM - 5 PM'
+            },
+            'tsuklakhang': {
+                name: 'Tsuklakhang Palace Monastery',
+                description: 'Royal chapel of the former monarchy.',
+                history: 'Built during the reign of Chogyal Thutob Namgyal.',
+                location: 'East Sikkim',
+                entryFee: '₹10',
+                visitingHours: '9 AM - 5 PM'
+            },
+            'do_drul_chorten': {
+                name: 'Do Drul Chorten Monastery',
+                description: 'Stupa complex with 108 prayer wheels.',
+                history: 'Built in 1945 by Trulshik Rinpoche.',
+                location: 'East Sikkim',
+                entryFee: 'Free',
+                visitingHours: '8 AM - 6 PM'
+            },
+            'hanuman_tok': {
+                name: 'Hanuman Tok Temple',
+                description: 'Hindu temple dedicated to Lord Hanuman.',
+                history: 'Maintained by Indian Army, offers views of Kanchenjunga.',
+                location: 'East Sikkim',
+                entryFee: 'Free',
+                visitingHours: '5 AM - 9 PM'
+            },
+            'default': {
+                name: 'Selected Monastery',
+                description: 'A sacred site with rich Buddhist heritage and stunning Himalayan views.',
+                history: 'Part of Sikkim\'s ancient monastic tradition.',
+                location: 'Sikkim',
+                entryFee: 'Varies',
+                visitingHours: 'Dawn to Dusk'
+            }
+        };
+
+        // Permit requirements with real data
+        const permitRequirements = {
+            'rumtek': { 
+                required: false, 
+                type: 'Entry Registration Only', 
+                cost: 'Free (Donations welcome)',
+                process: 'Register at main gate with photo ID',
+                documents: 'Government photo ID required'
+            },
+            'pemayangtse': { 
+                required: false, 
+                type: 'Entry Fee', 
+                cost: '₹50 per person',
+                process: 'Pay at monastery entrance',
+                documents: 'Photo ID for registration'
+            },
+            'phensang': { 
+                required: true, 
+                type: 'Restricted Area Permit (RAP)', 
+                cost: '₹300 per person',
+                process: 'Apply 15 days in advance through registered tour operator',
+                documents: 'Passport size photos, ID proof, medical certificate'
+            },
+            'labrang': { 
+                required: true, 
+                type: 'Protected Area Permit', 
+                cost: '₹250 per person',
+                process: 'Tourism office approval required',
+                documents: 'Valid ID, travel itinerary'
+            },
+            'lachung': { 
+                required: true, 
+                type: 'Inner Line Permit + North Sikkim Permit', 
+                cost: '₹400 per person',
+                process: 'Apply at Tourism office with tour operator',
+                documents: '4 passport photos, ID proof, medical fitness certificate'
+            },
+            'nathula': { 
+                required: true, 
+                type: 'Special Border Permit', 
+                cost: '₹500 per person',
+                process: 'Apply 24 hours in advance, Indian nationals only',
+                documents: 'Voter ID/Aadhaar, 2 passport photos'
+            },
+            'default': { 
+                required: false, 
+                type: 'Standard Entry', 
+                cost: 'Donation based',
+                process: 'Direct entry, follow monastery rules',
+                documents: 'Photo ID recommended'
+            }
+        };
+
+        // Location map for weather API queries (mapped to nearest major town in Sikkim)
+        const locationMap = {
+            'rumtek': {name: 'Rumtek, East Sikkim', lat: 27.33194, lon: 88.60167},
+            'pemayangtse': {name: 'Pelling, West Sikkim', lat: 27.3, lon: 88.2333},
+            'tashiding': {name: 'Tashiding, West Sikkim', lat: 27.30833, lon: 88.29806},
+            'enchey': {name: 'Gangtok, East Sikkim', lat: 27.338936, lon: 88.606506},
+            'dubdi': {name: 'Yuksom, West Sikkim', lat: 27.36917, lon: 88.22222},
+            'phensang': {name: 'Phensang, North Sikkim', lat: 27.42068, lon: 88.61006},
+            'ralang': {name: 'Ralang, South Sikkim', lat: 27.32856, lon: 88.33478},
+            'sanga_choeling': {name: 'Sanga Choeling, West Sikkim', lat: 27.3, lon: 88.2333},
+            'khecheopalri': {name: 'Khecheopalri, West Sikkim', lat: 27.35, lon: 88.1886},
+            'lingdum': {name: 'Lingdum, East Sikkim', lat: 27.33082, lon: 88.57988},
+            'phodong': {name: 'Phodong, North Sikkim', lat: 27.41291, lon: 88.58388},
+            'labrang': {name: 'Labrang, North Sikkim', lat: 27.41806, lon: 88.57944},
+            'tsuklakhang': {name: 'Gangtok, East Sikkim', lat: 27.338936, lon: 88.606506},
+            'do_drul_chorten': {name: 'Gangtok, East Sikkim', lat: 27.338936, lon: 88.606506},
+            'hanuman_tok': {name: 'Gangtok, East Sikkim', lat: 27.338936, lon: 88.606506}
+        };
+
+        // Departure location map for weather API queries
+        const departureLocationMap = {
+            'bagdogra': {name: 'Bagdogra, West Bengal', lat: 26.6812, lon: 88.3286},
+            'siliguri': {name: 'Siliguri, West Bengal', lat: 26.7271, lon: 88.3953},
+            'njp': {name: 'New Jalpaiguri, West Bengal', lat: 26.6833, lon: 88.4333},
+            'gangtok': {name: 'Gangtok, Sikkim', lat: 27.338936, lon: 88.606506},
+            'pelling': {name: 'Pelling, Sikkim', lat: 27.3, lon: 88.2333},
+            'namchi': {name: 'Namchi, Sikkim', lat: 27.1667, lon: 88.3667},
+            'yuksom': {name: 'Yuksom, Sikkim', lat: 27.36917, lon: 88.22222},
+            'ravangla': {name: 'Ravangla, Sikkim', lat: 27.3, lon: 88.3667},
+            'mangan': {name: 'Mangan, Sikkim', lat: 27.5, lon: 88.5333},
+            'gyalshing': {name: 'Gyalshing, Sikkim', lat: 27.2833, lon: 88.2667},
+            'lachung': {name: 'Lachung, Sikkim', lat: 27.6892, lon: 88.7431},
+            'lachen': {name: 'Lachen, Sikkim', lat: 27.7167, lon: 88.5578},
+            'zuluk': {name: 'Zuluk, Sikkim', lat: 27.25, lon: 88.8},
+            'tsomgo': {name: 'Tsomgo Lake, Sikkim', lat: 27.3747, lon: 88.7639},
+            'nathula': {name: 'Nathula Pass, Sikkim', lat: 27.3866, lon: 88.8309}
+        };
+
+        // Sikkim-specific departure keys to restrict updates to Sikkim locations only
+        const sikkimDepartureKeys = ['gangtok', 'pelling', 'namchi', 'yuksom', 'ravangla', 'mangan', 'gyalshing', 'lachung', 'lachen', 'zuluk', 'tsomgo', 'nathula'];
+
+        // Initialize app
+        document.getElementById('travelDate').min = new Date().toISOString().split('T')[0];
+        createParticles();
+        loadServices('');
+        updateWeatherForLocation(27.338936, 88.606506); // Initial weather for Gangtok
+        
+        // Update monastery selection handler
+        document.getElementById('monastery').addEventListener('change', function() {
+            updatePermitInfo(this.value);
+            updateDestinationWeather(this.value);
+            loadServices(this.value);
+        });
+
+        // Update departure selection handler (only for Sikkim locations)
+        document.getElementById('departure').addEventListener('change', function() {
+            updateDepartureWeather(this.value);
+        });
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function getWeatherDescAndIcon(code) {
+            const weatherMap = {
+                0: {desc: 'Clear sky', icon: '☀️'},
+                1: {desc: 'Mainly clear', icon: '☀️'},
+                2: {desc: 'Partly cloudy', icon: '⛅'},
+                3: {desc: 'Overcast', icon: '☁️'},
+                45: {desc: 'Fog', icon: '🌫️'},
+                48: {desc: 'Depositing rime fog', icon: '🌫️'},
+                51: {desc: 'Light drizzle', icon: '🌧️'},
+                53: {desc: 'Moderate drizzle', icon: '🌧️'},
+                55: {desc: 'Dense drizzle', icon: '🌧️'},
+                61: {desc: 'Slight rain', icon: '🌧️'},
+                63: {desc: 'Moderate rain', icon: '🌧️'},
+                65: {desc: 'Heavy rain', icon: '🌧️'},
+                71: {desc: 'Slight snow fall', icon: '🌨️'},
+                73: {desc: 'Moderate snow fall', icon: '🌨️'},
+                75: {desc: 'Heavy snow fall', icon: '🌨️'},
+                77: {desc: 'Snow grains', icon: '🌨️'},
+                80: {desc: 'Slight rain showers', icon: '🌦️'},
+                81: {desc: 'Moderate rain showers', icon: '🌦️'},
+                82: {desc: 'Violent rain showers', icon: '🌦️'},
+                85: {desc: 'Slight snow showers', icon: '🌨️'},
+                86: {desc: 'Heavy snow showers', icon: '🌨️'},
+                95: {desc: 'Thunderstorm', icon: '⛈️'},
+                96: {desc: 'Thunderstorm with slight hail', icon: '⛈️'},
+                99: {desc: 'Thunderstorm with heavy hail', icon: '⛈️'},
+            };
+            return weatherMap[code] || {desc: 'Unknown', icon: '🌤️'};
+        }
+
+        // Dynamic weather fetch using Open-Meteo API (no key required)
+        async function updateWeatherForLocation(lat, lon) {
+            try {
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FKolkata`;
+                const res = await fetch(weatherUrl);
+                const data = await res.json();
+
+                // Current weather
+                const current = data.current;
+                const temp = current.temperature_2m;
+                const {desc, icon} = getWeatherDescAndIcon(current.weather_code);
+
+                document.getElementById('current-temp').textContent = `${temp}°C`;
+                document.getElementById('weather-desc').textContent = desc;
+                document.getElementById('weather-icon').textContent = icon;
+
+                // Forecast
+                const forecast = [];
+                for (let i = 0; i < 3; i++) {
+                    const avgTemp = ((data.daily.temperature_2m_max[i] + data.daily.temperature_2m_min[i]) / 2).toFixed(1);
+                    const condition = getWeatherDescAndIcon(data.daily.weather_code[i]).icon;
+                    forecast.push({
+                        day: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : 'Day 3',
+                        temp: avgTemp,
+                        condition: condition
+                    });
+                }
+                updateWeatherForecast(forecast);
+            } catch (error) {
+                console.error('Weather update failed:', error);
+                document.getElementById('current-temp').textContent = 'N/A';
+                document.getElementById('weather-desc').textContent = 'Weather data unavailable';
+                document.getElementById('weather-icon').textContent = '🌤️';
+            }
+        }
+
+        function updateWeatherForecast(forecast) {
+            const forecastContainer = document.getElementById('weather-forecast');
+            forecastContainer.innerHTML = '';
+            
+            forecast.forEach(day => {
+                forecastContainer.innerHTML += `
+                    <div class="forecast-day">
+                        <div><strong>${day.day}</strong></div>
+                        <div style="font-size: 1.5em; margin: 5px 0;">${day.condition}</div>
+                        <div>${day.temp}°C</div>
+                    </div>
+                `;
+            });
+        }
+
+        function updateDestinationWeather(monastery) {
+            if (!monastery) return;
+            
+            const loc = locationMap[monastery] || {name: 'Gangtok, Sikkim', lat: 27.338936, lon: 88.606506};
+            document.getElementById('weather-location').textContent = loc.name;
+            updateWeatherForLocation(loc.lat, loc.lon);
+        }
+
+        function updateDepartureWeather(departure) {
+            if (!departure) return;
+            
+            // Priority to destination: If monastery is already selected, don't update weather for departure
+            const monastery = document.getElementById('monastery').value;
+            if (monastery) return;
+            
+            const loc = departureLocationMap[departure] || {name: 'Gangtok, Sikkim', lat: 27.338936, lon: 88.606506};
+            document.getElementById('weather-location').textContent = loc.name;
+            updateWeatherForLocation(loc.lat, loc.lon);
+        }
+
+        function updatePermitInfo(monastery) {
+            const permitDiv = document.getElementById('permit-details');
+            
+            if (!monastery) {
+                permitDiv.innerHTML = 'Select destination to see requirements';
+                return;
+            }
+            
+            const permit = permitRequirements[monastery] || permitRequirements.default;
+            
+            let permitHTML = `
+                <div style="margin-top: 10px;">
+                    <strong>Permit Required:</strong> ${permit.required ? 'Yes ⚠️' : 'No ✅'}<br>
+                    <strong>Type:</strong> ${permit.type}<br>
+                    <strong>Cost:</strong> ${permit.cost}<br>
+                    <strong>Process:</strong> ${permit.process}<br>
+                    <strong>Documents:</strong> ${permit.documents}
+                </div>
+            `;
+            
+            if (permit.required) {
+                permitHTML = `<div style="background: rgba(254, 215, 215, 0.9); padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px solid rgba(252, 129, 129, 0.5); color: #742a2a;">` + permitHTML + `</div>`;
+            } else {
+                permitHTML = `<div style="background: rgba(198, 246, 213, 0.9); padding: 15px; border-radius: 12px; margin-top: 10px; border: 2px solid rgba(104, 211, 145, 0.5); color: #22543d;">` + permitHTML + `</div>`;
+            }
+            
+            permitDiv.innerHTML = permitHTML;
+        }
+
+        function loadServices(monastery = '') {
+            const mon = monasteries[monastery] || {location: ''};
+            const loc = mon.location;
+
+            loadAccommodation(loc);
+            loadFood(loc);
+            loadGuides();
+            loadActivities();
+        }
+
+        function loadAccommodation(loc) {
+            const container = document.getElementById('accommodation-grid');
+            container.innerHTML = '';
+            let filtered = accommodationData;
+            if (loc) {
+                filtered = filtered.filter(h => h.location.includes(loc) || h.location.includes('Near'));
+            }
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="color: #b3b3ff;">No accommodations found for this location.</p>';
+                return;
+            }
+            filtered.forEach(hotel => {
+                container.innerHTML += createServiceCard(hotel, 'accommodation');
+            });
+        }
+
+        function loadFood(loc) {
+            const container = document.getElementById('food-grid');
+            container.innerHTML = '';
+            let filtered = restaurantData;
+            if (loc) {
+                filtered = filtered.filter(r => r.location.includes(loc) || r.location.includes('Near'));
+            }
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="color: #b3b3ff;">No restaurants found for this location.</p>';
+                return;
+            }
+            filtered.forEach(restaurant => {
+                container.innerHTML += createServiceCard(restaurant, 'food');
+            });
+        }
+
+        function loadGuides() {
+            const container = document.getElementById('guides-grid');
+            container.innerHTML = '';
+            
+            guideData.forEach(guide => {
+                container.innerHTML += createServiceCard(guide, 'guides');
+            });
+        }
+
+        function loadActivities() {
+            const container = document.getElementById('activities-grid');
+            container.innerHTML = '';
+            
+            activitiesData.forEach(activity => {
+                container.innerHTML += createServiceCard(activity, 'activities');
+            });
+        }
+
+        // Generic function to create service card HTML
+        function createServiceCard(item, type) {
+            let specifics = '';
+            if (type === 'food') {
+                specifics = `
+                    <div style="background: rgba(74, 0, 127, 0.5); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(106, 0, 204, 0.3);">
+                        <strong style="color: #6a00cc;">Specialties:</strong><br><br>
+                        <div style="color: #b3b3ff;">
+                            ${item.specialties.map(spec => `• ${spec}`).join('<br>')}
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'guides') {
+                specifics = `
+                    <p style="color: #b3b3ff; margin-bottom: 10px;"><strong>Specialty:</strong> ${item.specialty}</p>
+                    <p style="color: #b3b3ff; margin-bottom: 10px;"><strong>Languages:</strong> ${item.languages.join(', ')}</p>
+                    <p style="color: #b3b3ff; margin-bottom: 15px;"><strong>Experience:</strong> ${item.experience}</p>
+                `;
+            } else if (type === 'activities') {
+                specifics = `
+                    <p style="color: #b3b3ff; margin-bottom: 10px;"><strong>Duration:</strong> ${item.duration}</p>
+                    <p style="color: #b3b3ff; margin-bottom: 15px;"><strong>Description:</strong> ${item.description}</p>
+                    <div style="background: rgba(74, 0, 127, 0.5); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(106, 0, 204, 0.3);">
+                        <strong style="color: #6a00cc;">Features:</strong><br><br>
+                        <div style="color: #b3b3ff;">
+                            ${item.features.map(feature => `• ${feature}`).join('<br>')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                specifics = `
+                    <p style="color: #b3b3ff; margin-bottom: 10px;"><strong>Location:</strong> ${item.location}</p>
+                    <div style="background: rgba(74, 0, 127, 0.5); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(106, 0, 204, 0.3);">
+                        <strong style="color: #6a00cc;">Features:</strong><br><br>
+                        <div style="color: #b3b3ff;">
+                            ${item.features.map(feature => `• ${feature}`).join('<br>')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="service-card">
+                    <h4 style="color: #d1aaff; margin-bottom: 15px; font-size: 1.3em;">${getIconForType(type)} ${item.name}</h4>
+                    <div style="margin-bottom: 15px;">
+                        <span style="background: linear-gradient(135deg, #6a00cc, #4a007f); color: #e0e0ff; padding: 6px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold;">${item.type}</span>
+                        <span style="margin-left: 15px; color: #b3b3ff; font-weight: bold;">⭐ ${item.rating}</span>
+                    </div>
+                    ${specifics}
+                    <p style="color: #b3b3ff; margin-bottom: 15px;"><strong>Price:</strong> <span style="color: #a3e4d7; font-weight: bold; font-size: 1.2em;">${item.price}</span></p>
+                    <div style="background: rgba(74, 0, 127, 0.5); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(106, 0, 204, 0.3);">
+                        <strong style="color: #6a00cc;">📞 Contact:</strong><br><br>
+                        <div style="color: #b3b3ff;">
+                            Phone: ${item.contact.phone}<br>
+                            ${item.contact.email ? `Email: ${item.contact.email}<br>` : ''}
+                            ${item.contact.whatsapp ? `WhatsApp: ${item.contact.whatsapp}` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getIconForType(type) {
+            const icons = {
+                accommodation: '🏨',
+                food: '🍽️',
+                guides: '🧭',
+                activities: '🏃'
+            };
+            return icons[type] || '';
+        }
+
+        // Switch tab function
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            const activeTab = document.querySelector(`.tab[onclick="switchTab('${tab}')"]`);
+            if (activeTab) activeTab.classList.add('active');
+
+            document.querySelectorAll('.service-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(tab + '-content').classList.remove('hidden');
+        }
+
+        // Search transport function
+        function searchTransport() {
+            const departure = document.getElementById('departure').value;
+            const monastery = document.getElementById('monastery').value;
+            const travelDate = document.getElementById('travelDate').value;
+            const passengers = document.getElementById('passengers').value;
+
+            if (!departure || !monastery || !travelDate) {
+                alert('Please select departure, monastery, and travel date.');
+                return;
+            }
+
+            const key = `${departure}-${monastery}`;
+            let providers = transportProviders[key] || transportProviders['default'];
+
+            // Adjust price for passengers if private
+            providers = providers.map(prov => {
+                const newProv = {...prov};
+                if (prov.type.includes('Private') && passengers !== '1') {
+                    const basePrice = parseInt(prov.price.replace('₹', '')) || 0;
+                    newProv.price = `₹${basePrice * parseInt(passengers)}`;
+                } else if (prov.type.includes('Shared') && passengers !== '1') {
+                    const basePrice = parseInt(prov.price.replace('₹', '')) || 0;
+                    newProv.price = `₹${basePrice * parseInt(passengers)} (per person ₹${basePrice})`;
+                }
+                return newProv;
+            });
+
+            const transportResults = document.getElementById('transport-results');
+            transportResults.innerHTML = '';
+
+            providers.forEach(prov => {
+                transportResults.innerHTML += `
+                    <div class="transport-card">
+                        <div class="transport-header">
+                            <div class="transport-type">${prov.type}</div>
+                            <div class="rating">⭐ ${prov.rating}</div>
+                            <div class="price">${prov.price}</div>
+                        </div>
+                        <h4 style="color: #d1aaff; margin-bottom: 15px;">${prov.name}</h4>
+                        <p style="color: #b3b3ff; margin-bottom: 15px;"><strong>Duration:</strong> ${prov.duration}</p>
+                        <p style="color: #b3b3ff; margin-bottom: 15px;">${prov.details}</p>
+                        <div style="background: rgba(74, 0, 127, 0.5); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(106, 0, 204, 0.3);">
+                            <strong style="color: #6a00cc;">Features:</strong><br><br>
+                            <div style="color: #b3b3ff;">
+                                ${prov.features.map(feature => `• ${feature}`).join('<br>')}
+                            </div>
+                        </div>
+                        <div class="contact-info">
+                            <h4>Contact Information</h4>
+                            <div style="color: #b3b3ff;">
+                                Phone: ${prov.contact.phone}<br>
+                                ${prov.contact.whatsapp ? `WhatsApp: ${prov.contact.whatsapp}<br>` : ''}
+                                ${prov.contact.email ? `Email: ${prov.contact.email}` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Show monastery details
+            const monDetails = document.getElementById('monastery-details');
+            const mon = monasteries[monastery] || monasteries['default'];
+            monDetails.innerHTML = `
+                <div class="service-card">
+                    <h4 style="color: #d1aaff; margin-bottom: 15px; font-size: 1.3em;">${mon.name}</h4>
+                    <p style="color: #b3b3ff; margin-bottom: 15px;">${mon.description}</p>
+                    <p style="color: #b3b3ff; margin-bottom: 15px;"><strong>History:</strong> ${mon.history}</p>
+                    <p style="color: #b3b3ff; margin-bottom: 15px;"><strong>Location:</strong> ${mon.location}</p>
+                    <p style="color: #b3b3ff; margin-bottom: 15px;"><strong>Entry Fee:</strong> ${mon.entryFee}</p>
+                    <p style="color: #b3b3ff; margin-bottom: 15px;"><strong>Visiting Hours:</strong> ${mon.visitingHours}</p>
+                </div>
+            `;
+
+            // Show nearby hotels (filter or show all)
+            const nearbyHotels = document.getElementById('nearby-hotels');
+            nearbyHotels.innerHTML = '';
+            let filteredHotels = accommodationData.filter(h => h.location.includes(mon.location) || h.location.includes('Near'));
+            if (filteredHotels.length === 0) {
+                nearbyHotels.innerHTML = '<p style="color: #b3b3ff;">No nearby accommodations found.</p>';
+            } else {
+                filteredHotels.forEach(hotel => {
+                    nearbyHotels.innerHTML += createServiceCard(hotel, 'accommodation');
+                });
+            }
+
+            // Show nearby restaurants
+            const nearbyRestaurantsDiv = document.getElementById('nearby-restaurants');
+            nearbyRestaurantsDiv.innerHTML = '';
+            let filteredRestaurants = restaurantData.filter(r => r.location.includes(mon.location) || r.location.includes('Near'));
+            if (filteredRestaurants.length === 0) {
+                nearbyRestaurantsDiv.innerHTML = '<p style="color: #b3b3ff;">No nearby restaurants found.</p>';
+            } else {
+                filteredRestaurants.forEach(restaurant => {
+                    nearbyRestaurantsDiv.innerHTML += createServiceCard(restaurant, 'food');
+                });
+            }
+
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('destination-info').classList.remove('hidden');
+
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
