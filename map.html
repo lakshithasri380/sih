@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sikkim Sacred Heritage Explorer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --shadow-medium: 0 16px 48px rgba(0, 0, 0, 0.18);
+            --shadow-strong: 0 24px 64px rgba(0, 0, 0, 0.24);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--primary-gradient);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: auraFlow 25s ease-in-out infinite;
+        }
+
+        @keyframes auraFlow {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1) rotate(0deg); 
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.05) rotate(2deg); 
+            }
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 420px;
+            min-width: 420px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-medium);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--gold-gradient);
+            border-radius: 3px;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .app-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2em;
+            font-weight: 700;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .app-subtitle {
+            font-size: 1em;
+            opacity: 0.85;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-strong);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .search-section {
+            margin-bottom: 28px;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            border: 2px solid var(--glass-border);
+            border-radius: 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 400;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(255, 215, 0, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+            transform: scale(1.01);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 18px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-suggestions {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            margin-top: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-results {
+            font-size: 13px;
+            color: #ffd700;
+            text-align: right;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-section {
+            margin-bottom: 24px;
+        }
+
+        .filter-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .filter-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 2px;
+            background: var(--gold-gradient);
+            border-radius: 1px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 10px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .filter-btn:hover::before {
+            left: 100%;
+        }
+
+        .filter-btn.active {
+            background: var(--gold-gradient);
+            color: #1a1a1a;
+            border-color: transparent;
+            font-weight: 600;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .special-features {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .feature-btn {
+            padding: 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .legend-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        .legend-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .legend-icon {
+            margin-right: 12px;
+            font-size: 20px;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3));
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+            height: 100vh;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .map-btn {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            padding: 12px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .map-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Popup Styles */
+        .leaflet-popup-content-wrapper {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95));
+            border-radius: 24px;
+            box-shadow: var(--shadow-strong);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            min-width: 320px;
+        }
+
+        .leaflet-popup-content {
+            margin: 28px;
+            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .popup-header {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .popup-info {
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .popup-info strong {
+            color: #667eea;
+            font-weight: 600;
+            min-width: 80px;
+        }
+
+        .popup-description {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 16px 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.05));
+            padding: 16px;
+            border-radius: 16px;
+            border-left: 4px solid #667eea;
+            font-style: italic;
+        }
+
+        .popup-festivals {
+            margin: 16px 0;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+        }
+
+        .festival-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 4px 2px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .festival-tag:hover {
+            transform: scale(1.05);
+        }
+
+        .festival-tag.buddhist { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .festival-tag.hindu { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .festival-tag.sikh { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .festival-tag.mixed { background: linear-gradient(135deg, #ec4899, #db2777); }
+
+        .popup-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .popup-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .popup-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .popup-btn.secondary {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .popup-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Custom marker animations */
+        .monastery-marker {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.4));
+            animation: markerFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes markerFloat {
+            0%, 100% { 
+                transform: translateY(0px); 
+                filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.4));
+            }
+            50% { 
+                transform: translateY(-6px); 
+                filter: drop-shadow(0 8px 20px rgba(255, 215, 0, 0.6));
+            }
+        }
+
+        .monastery-marker:hover {
+            transform: scale(1.3) translateY(-8px);
+            filter: drop-shadow(0 12px 24px rgba(255, 215, 0, 0.8));
+            z-index: 1000 !important;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-strong);
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 28px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(20px);
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #ffd700;
+            border-right: 4px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: 500;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 65vh;
+                transform: translateY(-60vh);
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 1001;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+            }
+
+            .sidebar.open {
+                transform: translateY(0);
+            }
+
+            .app-container {
+                flex-direction: column;
+            }
+
+            .map-container {
+                width: 100%;
+                height: 100vh;
+            }
+
+            .map-controls {
+                top: 70px;
+                right: 10px;
+            }
+
+            .stats-dashboard {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .stat-number {
+                font-size: 1.6em;
+            }
+
+            .app-title {
+                font-size: 1.8em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                height: 60vh;
+                transform: translateY(-55vh);
+                padding: 20px;
+            }
+
+            .app-title {
+                font-size: 1.6em;
+            }
+
+            .stat-number {
+                font-size: 1.4em;
+            }
+
+            .search-input {
+                padding: 14px 45px 14px 16px;
+                font-size: 14px;
+            }
+
+            .filter-btn {
+                padding: 8px 12px;
+                font-size: 11px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
+        /* Success and error states */
+        .search-success {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important;
+        }
+
+        .search-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: slideInUp 0.6s ease;
+        }
+
+        .popup-image {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <button class="mobile-toggle" onclick="toggleSidebar()">☰ Explore</button>
+
+        <div class="sidebar" id="sidebar">
+            <div class="app-header animate-in">
+                <h1 class="app-title">🏔️ Sacred Sikkim</h1>
+                <p class="app-subtitle">Discover 76 Heritage Monasteries</p>
+            </div>
+
+            <div class="stats-dashboard">
+                <div class="stat-card animate-in" onclick="showAllMonasteries()" style="animation-delay: 0.1s">
+                    <div class="stat-number" id="total-monasteries">76</div>
+                    <div class="stat-label">Sacred Sites</div>
+                </div>
+                <div class="stat-card animate-in" onclick="showFestivalCalendar()" style="animation-delay: 0.2s">
+                    <div class="stat-number" id="active-festivals">24</div>
+                    <div class="stat-label">Active Festivals</div>
+                </div>
+                <div class="stat-card animate-in" onclick="showWeatherInfo()" style="animation-delay: 0.3s">
+                    <div class="stat-number" id="weather-temp">18°C</div>
+                    <div class="stat-label">Current Weather</div>
+                </div>
+                <div class="stat-card animate-in" onclick="showVisitPlanner()" style="animation-delay: 0.4s">
+                    <div class="stat-number" id="planned-visits">0</div>
+                    <div class="stat-label">Planned Visits</div>
+                </div>
+            </div>
+
+            <div class="search-section animate-in" style="animation-delay: 0.5s">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" 
+                           placeholder="Search monasteries, festivals, locations...">
+                    <span class="search-icon">🔍</span>
+                    <div class="search-suggestions" id="search-suggestions"></div>
+                </div>
+                <div class="search-results" id="search-results"></div>
+            </div>
+
+            <div class="special-features animate-in" style="animation-delay: 0.6s">
+                <div class="filter-title">🎯 Smart Features</div>
+                <div class="feature-grid">
+                    <button class="feature-btn" onclick="showSeasonalInfo()">📅 Seasonal Guide</button>
+                    <button class="feature-btn" onclick="showCulturalInfo()">🏛️ Cultural Context</button>
+                    <button class="feature-btn" onclick="showAccessibilityGuide()">♿ Accessibility</button>
+                    <button class="feature-btn" onclick="showPhotoGallery()">📸 Photo Gallery</button>
+                </div>
+            </div>
+
+            <div class="filter-section animate-in" style="animation-delay: 0.7s">
+                <div class="filter-title">🌍 Regions</div>
+                <div class="filter-buttons" id="region-filters">
+                    <button class="filter-btn active" data-region="all">All Regions</button>
+                    <button class="filter-btn" data-region="east">East Sikkim</button>
+                    <button class="filter-btn" data-region="west">West Sikkim</button>
+                    <button class="filter-btn" data-region="north">North Sikkim</button>
+                    <button class="filter-btn" data-region="south">South Sikkim</button>
+                </div>
+            </div>
+
+            <div class="filter-section animate-in" style="animation-delay: 0.8s">
+                <div class="filter-title">🏛️ Traditions</div>
+                <div class="filter-buttons" id="type-filters">
+                    <button class="filter-btn active" data-type="all">All Traditions</button>
+                    <button class="filter-btn" data-type="nyingma">Nyingma</button>
+                    <button class="filter-btn" data-type="kagyu">Kagyu</button>
+                    <button class="filter-btn" data-type="gelug">Gelug</button>
+                    <button class="filter-btn" data-type="bon">Bon</button>
+                    <button class="filter-btn" data-type="hindu">Hindu</button>
+                    <button class="filter-btn" data-type="sikh">Sikh</button>
+                    <button class="filter-btn" data-type="mixed">Mixed</button>
+                    <button class="filter-btn" data-type="historical">Historical</button>
+                    <button class="filter-btn" data-type="lepcha">Lepcha</button>
+                    <button class="filter-btn" data-type="memorial">Memorial</button>
+                    <button class="filter-btn" data-type="modern">Modern</button>
+                    <button class="filter-btn" data-type="meditation">Meditation</button>
+                </div>
+            </div>
+
+            <div class="filter-section animate-in" style="animation-delay: 0.9s">
+                <div class="filter-title">🚶 Accessibility</div>
+                <div class="filter-buttons" id="access-filters">
+                    <button class="filter-btn active" data-access="all">All Levels</button>
+                    <button class="filter-btn" data-access="easy">Easy</button>
+                    <button class="filter-btn" data-access="moderate">Moderate</button>
+                    <button class="filter-btn" data-access="difficult">Difficult</button>
+                </div>
+            </div>
+
+            <div class="legend-panel animate-in" style="animation-delay: 1s">
+                <div class="filter-title">📍 Legend</div>
+                <div class="legend-item" onclick="filterByIcon('⛩️')">
+                    <span class="legend-icon">⛩️</span> Monasteries
+                </div>
+                <div class="legend-item" onclick="filterByIcon('🏔️')">
+                    <span class="legend-icon">🏔️</span> Mountain Sites
+                </div>
+                <div class="legend-item" onclick="filterByIcon('📚')">
+                    <span class="legend-icon">📚</span> Historical Sites
+                </div>
+                <div class="legend-item" onclick="filterByIcon('🎭')">
+                    <span class="legend-icon">🎭</span> Cultural Sites
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="map-controls">
+                <button class="map-btn" onclick="resetMapView()">🏠 Home View</button>
+                <button class="map-btn" onclick="toggleSatelliteView()">🌍 Satellite</button>
+                <button class="map-btn" onclick="showMyLocation()">📍 My Location</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Festival Modal -->
+    <div id="festival-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('festival-modal')">×</button>
+            <h2 class="modal-title">🎭 Festival Calendar</h2>
+            <div id="festival-content"></div>
+        </div>
+    </div>
+
+    <!-- Weather Modal -->
+    <div id="weather-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('weather-modal')">×</button>
+            <h2 class="modal-title">🌤️ Weather Forecast</h2>
+            <div id="weather-content"></div>
+        </div>
+    </div>
+
+    <!-- Planner Modal -->
+    <div id="planner-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('planner-modal')">×</button>
+            <h2 class="modal-title">🗺️ Visit Planner</h2>
+            <div id="planner-content"></div>
+        </div>
+    </div>
+
+    <!-- Cultural Modal -->
+    <div id="cultural-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('cultural-modal')">×</button>
+            <h2 class="modal-title">🏛️ Cultural Information</h2>
+            <div id="cultural-content"></div>
+        </div>
+    </div>
+
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('gallery-modal')">×</button>
+            <h2 class="modal-title">📸 Photo Gallery</h2>
+            <div id="gallery-content"></div>
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('details-modal')">×</button>
+            <h2 class="modal-title" id="details-title"></h2>
+            <div id="details-content"></div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Discovering Sacred Sites...</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script>
+        // Monasteries Data (combined and deduplicated)
+        const monasteries = [
+            // East Sikkim (19 monasteries)
+            { name: "Enchey Monastery", lat: 27.3389, lng: 88.6139, region: "east", type: "nyingma", accessibility: "easy", founded: 1909, altitude: "1950m", description: "Perched above Gangtok, known for its sacred Cham dances and mountain views.", festivals: ["Cham Dance", "Losar"], features: ["mountain views", "ritual dances"], icon: "🏔️", bestSeason: "Oct-Dec, Mar-May", permitRequired: false, photos: ["enchey1.jpg"] },
+            { name: "Ganesh Tok Temple", lat: 27.3444, lng: 88.6011, region: "east", type: "hindu", accessibility: "easy", founded: 1952, altitude: "2000m", description: "Hindu temple dedicated to Lord Ganesha with panoramic city views.", festivals: ["Ganesh Chaturthi", "Diwali"], features: ["city views", "sunset point"], icon: "🎭", bestSeason: "Year-round", permitRequired: false, photos: ["ganesh1.jpg"] },
+            { name: "Do Drul Chorten", lat: 27.3183, lng: 88.6139, region: "east", type: "nyingma", accessibility: "easy", founded: 1945, altitude: "1780m", description: "Large Buddhist stupa surrounded by prayer wheels, built by Trulshik Rinpoche.", festivals: ["Buddha Purnima", "Saga Dawa"], features: ["prayer wheels", "meditation"], icon: "⛩️", bestSeason: "Year-round", permitRequired: false, photos: ["do_drul.jpg"] },
+            { name: "Hanuman Tok", lat: 27.3550, lng: 88.5842, region: "east", type: "hindu", accessibility: "moderate", founded: 1950, altitude: "2195m", description: "Hindu temple dedicated to Hanuman, offering spectacular Himalayan views.", festivals: ["Hanuman Jayanti", "Ram Navami"], features: ["himalayan views", "sunrise point"], icon: "🏔️", bestSeason: "Clear weather days", permitRequired: false, photos: ["hanuman1.jpg"] },
+            { name: "Ranka Monastery", lat: 27.2833, lng: 88.5833, region: "east", type: "gelug", accessibility: "moderate", founded: 1995, altitude: "1400m", description: "Modern monastery with traditional architecture and beautiful gardens.", festivals: ["Losar", "Monlam"], features: ["gardens", "modern facilities"], icon: "⛩️", bestSeason: "Mar-May, Oct-Dec", permitRequired: false, photos: ["ranka1.jpg"] },
+            { name: "Bakthang Waterfall Temple", lat: 27.3167, lng: 88.5667, region: "east", type: "mixed", accessibility: "moderate", founded: 1960, altitude: "1650m", description: "Sacred site near waterfall where both Hindus and Buddhists worship.", festivals: ["Shivaratri", "Buddha Purnima"], features: ["waterfall", "natural setting"], icon: "🎭", bestSeason: "May-Oct", permitRequired: false, photos: ["bakthang1.jpg"] },
+            { name: "Lingdum Monastery", lat: 27.2750, lng: 88.5250, region: "east", type: "kagyu", accessibility: "moderate", founded: 1999, altitude: "1800m", description: "Modern monastery known for its meditation programs and peaceful environment.", festivals: ["Kagyed", "Saga Dawa"], features: ["meditation programs", "retreat center"], icon: "📚", bestSeason: "Mar-Nov", permitRequired: false, photos: ["lingdum1.jpg"] },
+            { name: "Banjhakri Falls Temple", lat: 27.2833, lng: 88.5500, region: "east", type: "mixed", accessibility: "easy", founded: 1970, altitude: "1700m", description: "Sacred waterfall site with temples dedicated to traditional Sikkimese deities.", festivals: ["Bhumchu", "Local festivals"], features: ["waterfall", "energy park"], icon: "🎭", bestSeason: "May-Oct", permitRequired: false, photos: ["banjhakri1.jpg"] },
+            { name: "Gonjang Monastery", lat: 27.3000, lng: 88.5750, region: "east", type: "kagyu", accessibility: "moderate", founded: 1981, altitude: "1900m", description: "Peaceful monastery known for its traditional Tibetan architecture.", festivals: ["Losar", "Kagyed"], features: ["traditional architecture", "meditation"], icon: "⛩️", bestSeason: "Mar-Nov", permitRequired: false, photos: ["gonjang1.jpg"] },
+            { name: "Kabi Lungchok", lat: 27.4333, lng: 88.5833, region: "east", type: "historical", accessibility: "easy", founded: 1642, altitude: "1400m", description: "Historical site where blood brotherhood was established between Lepcha and Bhutia chiefs.", festivals: ["Brotherhood Day", "Historical commemorations"], features: ["historical significance", "unity symbol"], icon: "📚", bestSeason: "Year-round", permitRequired: false, photos: ["kabi1.jpg"] },
+            { name: "Fambong Lho Wildlife Temple", lat: 27.2167, lng: 88.4500, region: "east", type: "mixed", accessibility: "moderate", founded: 1970, altitude: "2000m", description: "Temple within wildlife sanctuary dedicated to forest conservation.", festivals: ["Environment Day", "Forest blessings"], features: ["wildlife sanctuary", "conservation"], icon: "🎭", bestSeason: "Oct-Mar", permitRequired: true, photos: ["fambong1.jpg"] },
+            { name: "Reshi Hot Springs Temple", lat: 27.1833, lng: 88.4833, region: "east", type: "hindu", accessibility: "moderate", founded: 1960, altitude: "1200m", description: "Temple complex around medicinal hot springs on Rangit River banks.", festivals: ["Shivaratri", "Chhath Puja"], features: ["medicinal springs", "river location"], icon: "🎭", bestSeason: "Oct-Mar", permitRequired: false, photos: ["reshi1.jpg"] },
+            { name: "Nathu La Pass Memorial", lat: 27.3958, lng: 88.8419, region: "east", type: "memorial", accessibility: "moderate", founded: 1962, altitude: "4310m", description: "Memorial and prayer site at historic Indo-China border pass.", festivals: ["Memorial services", "Border ceremonies"], features: ["historic pass", "war memorial"], icon: "📚", bestSeason: "May-Oct", permitRequired: true, photos: ["nathu1.jpg"] },
+            { name: "Baba Mandir", lat: 27.4167, lng: 88.8667, region: "east", type: "memorial", accessibility: "moderate", founded: 1968, altitude: "4000m", description: "Memorial temple dedicated to soldier Harbhajan Singh, protective spirit.", festivals: ["Memorial services", "Military ceremonies"], features: ["military memorial", "protective spirit"], icon: "🎭", bestSeason: "May-Oct", permitRequired: true, photos: ["baba1.jpg"] },
+            { name: "Kupup Lake Temple", lat: 27.3833, lng: 88.8333, region: "east", type: "mixed", accessibility: "moderate", founded: 1980, altitude: "3800m", description: "Temple beside elephant-shaped lake, sacred to locals.", festivals: ["Lake ceremonies", "Local festivals"], features: ["elephant lake", "alpine setting"], icon: "🏔️", bestSeason: "May-Oct", permitRequired: true, photos: ["kupup1.jpg"] },
+            { name: "Tsomgo Lake Temple", lat: 27.3667, lng: 88.7667, region: "east", type: "mixed", accessibility: "easy", founded: 1975, altitude: "3753m", description: "Sacred glacial lake temple, changes color with seasons.", festivals: ["Guru Purnima", "Lake festivals"], features: ["glacial lake", "color changing"], icon: "🏔️", bestSeason: "May-Oct", permitRequired: true, photos: ["tsomgo1.jpg", "tsomgo2.jpg"] },
+            { name: "Sikkim Zoological Park Temple", lat: 27.3667, lng: 88.5667, region: "east", type: "mixed", accessibility: "easy", founded: 1985, altitude: "1800m", description: "Temple within zoo dedicated to wildlife conservation.", festivals: ["Wildlife Day", "Conservation ceremonies"], features: ["zoological park", "wildlife conservation"], icon: "🎭", bestSeason: "Oct-Mar", permitRequired: false, photos: ["zoo1.jpg"] },
+            { name: "Flower Exhibition Temple", lat: 27.3333, lng: 88.6167, region: "east", type: "mixed", accessibility: "easy", founded: 1990, altitude: "1650m", description: "Temple celebrating Sikkim's floral diversity.", festivals: ["Flower festivals", "Botanical celebrations"], features: ["floral diversity", "seasonal displays"], icon: "🎭", bestSeason: "Mar-May", permitRequired: false, photos: ["flower1.jpg"] },
+            { name: "Pastanga Monastery", lat: 27.2833, lng: 88.6000, region: "east", type: "nyingma", accessibility: "moderate", founded: 1890, altitude: "2000m", description: "Village monastery serving local community.", festivals: ["Village festivals", "Community celebrations"], features: ["community service", "traditional practices"], icon: "⛩️", bestSeason: "Mar-Nov", permitRequired: false, photos: ["pastanga1.jpg"] },
+
+            // West Sikkim (20 monasteries)
+            { name: "Pemayangtse Monastery", lat: 27.2108, lng: 88.2492, region: "west", type: "nyingma", accessibility: "easy", founded: 1705, altitude: "2085m", description: "One of oldest monasteries meaning 'Perfect Sublime Lotus'. Features intricate wooden sculptures.", festivals: ["Cham Dance", "Losar", "Saga Dawa"], features: ["wooden sculptures", "museum", "kanchenjunga views"], icon: "⛩️", bestSeason: "Mar-May, Oct-Dec", permitRequired: false, photos: ["pemayangtse1.jpg", "pemayangtse2.jpg"] },
+            { name: "Tashiding Monastery", lat: 27.2667, lng: 88.2667, region: "west", type: "nyingma", accessibility: "moderate", founded: 1641, altitude: "1465m", description: "Sacred heart-shaped hill monastery. Famous for holy Bumchu ceremony.", festivals: ["Bumchu", "Saga Dawa", "Losar"], features: ["sacred water ceremony", "heart-shaped hill"], icon: "🏔️", bestSeason: "Feb (Bumchu), Mar-May", permitRequired: false, photos: ["tashiding1.jpg"] },
+            { name: "Khecheopalri Lake Temple", lat: 27.3333, lng: 88.2167, region: "west", type: "mixed", accessibility: "moderate", founded: 800, altitude: "1700m", description: "Sacred lake where no leaf floats, revered by Buddhists and Hindus.", festivals: ["Saga Dawa", "Shivaratri", "Maghe Sankranti"], features: ["sacred lake", "wish-fulfilling"], icon: "🎭", bestSeason: "Mar-May, Oct-Nov", permitRequired: false, photos: ["khecheopalri1.jpg", "khecheopalri2.jpg"] },
+            { name: "Norbugang Coronation Site", lat: 27.3000, lng: 88.2500, region: "west", type: "historical", accessibility: "easy", founded: 1642, altitude: "1600m", description: "Historical site where first Chogyal was crowned.", festivals: ["Sikkim Day", "Historical commemorations"], features: ["historical significance", "coronation throne"], icon: "📚", bestSeason: "Year-round", permitRequired: false, photos: ["norbugang1.jpg"] },
+            { name: "Rabdentse Ruins", lat: 27.2083, lng: 88.2417, region: "west", type: "historical", accessibility: "moderate", founded: 1670, altitude: "2100m", description: "Ruins of Sikkim's second capital with Kanchenjunga views.", festivals: ["Heritage festival", "Local celebrations"], features: ["ruins", "archaeological site"], icon: "🏔️", bestSeason: "Clear weather days", permitRequired: false, photos: ["rabdentse1.jpg"] },
+            { name: "Sanga Choeling Monastery", lat: 27.2142, lng: 88.2503, region: "west", type: "nyingma", accessibility: "difficult", founded: 1697, altitude: "2100m", description: "Hilltop monastery meaning 'Island of Esoteric Teaching'. Oldest in Sikkim.", festivals: ["Losar", "Saga Dawa"], features: ["oldest monastery", "hilltop location"], icon: "⛩️", bestSeason: "Mar-May, Oct-Nov", permitRequired: false, photos: ["sanga1.jpg"] },
+            { name: "Yuksom Monastery", lat: 27.3628, lng: 88.2133, region: "west", type: "nyingma", accessibility: "easy", founded: 1700, altitude: "1780m", description: "Located in historic first capital, base for Kanchenjunga treks.", festivals: ["Losar", "Local festivals"], features: ["trekking base", "historical town"], icon: "🏔️", bestSeason: "Mar-May, Oct-Nov", permitRequired: false, photos: ["yuksom1.jpg"] },
+            { name: "Dubdi Monastery", lat: 27.3667, lng: 88.2167, region: "west", type: "nyingma", accessibility: "moderate", founded: 1701, altitude: "2100m", description: "Hermit's Cell built by Lhatsun Chenpo.", festivals: ["Saga Dawa", "Losar"], features: ["hermitage", "meditation retreat"], icon: "📚", bestSeason: "Mar-May, Oct-Nov", permitRequired: false, photos: ["dubdi1.jpg"] },
+            { name: "Dentam Monastery", lat: 27.1833, lng: 88.2167, region: "west", type: "gelug", accessibility: "easy", founded: 1950, altitude: "1500m", description: "Peaceful monastery in valley setting.", festivals: ["Losar", "Monlam"], features: ["valley views", "peaceful setting"], icon: "⛩️", bestSeason: "Year-round", permitRequired: false, photos: ["dentam1.jpg"] },
+            { name: "Changey Falls Temple", lat: 27.1667, lng: 88.2500, region: "west", type: "mixed", accessibility: "moderate", founded: 1960, altitude: "1800m", description: "Temple complex near beautiful waterfalls.", festivals: ["Shivaratri", "Buddha Purnima"], features: ["waterfalls", "natural beauty"], icon: "🎭", bestSeason: "May-Oct", permitRequired: false, photos: ["changey1.jpg"] },
+            { name: "Barsey Rhododendron Temple", lat: 27.1000, lng: 88.1500, region: "west", type: "mixed", accessibility: "difficult", founded: 1980, altitude: "3000m", description: "Sacred site within rhododendron sanctuary.", festivals: ["Spring festivals", "Flower blessing ceremonies"], features: ["rhododendron sanctuary", "seasonal blooms"], icon: "🏔️", bestSeason: "Apr-May", permitRequired: true, photos: ["barsey1.jpg"] },
+            { name: "Hee Bermiok Monastery", lat: 27.2500, lng: 88.2000, region: "west", type: "nyingma", accessibility: "moderate", founded: 1920, altitude: "2200m", description: "Monastery known for tea gardens and spiritual retreats.", festivals: ["Tea blessing ceremonies", "Losar"], features: ["tea gardens", "retreat center"], icon: "⛩️", bestSeason: "Mar-May, Oct-Dec", permitRequired: false, photos: ["heebermiok1.jpg"] },
+            { name: "Darap Monastery", lat: 27.2333, lng: 88.1833, region: "west", type: "lepcha", accessibility: "easy", founded: 1850, altitude: "1600m", description: "Traditional Lepcha monastery preserving indigenous practices.", festivals: ["Lepcha festivals", "Indigenous ceremonies"], features: ["lepcha traditions", "cultural preservation"], icon: "📚", bestSeason: "Year-round", permitRequired: false, photos: ["darap1.jpg"] },
+            { name: "Kanchenjunga Base Camp Temple", lat: 27.7000, lng: 88.1000, region: "west", type: "mixed", accessibility: "difficult", founded: 1990, altitude: "4200m", description: "Sacred site at base camp, highest temple in Sikkim.", festivals: ["Mountain worship", "Climber blessings"], features: ["base camp location", "highest temple"], icon: "🏔️", bestSeason: "May-Oct", permitRequired: true, photos: ["basecamp1.jpg"] },
+            { name: "Rimbi Waterfall Temple", lat: 27.3000, lng: 88.2167, region: "west", type: "mixed", accessibility: "moderate", founded: 1970, altitude: "1800m", description: "Temple near scenic waterfall, popular for nature worship.", festivals: ["Water ceremonies", "Nature festivals"], features: ["waterfall proximity", "photography spot"], icon: "🎭", bestSeason: "May-Oct", permitRequired: false, photos: ["rimbi1.jpg"] },
+            { name: "Pelling Sky Walk Temple", lat: 27.2167, lng: 88.2167, region: "west", type: "modern", accessibility: "easy", founded: 2018, altitude: "2000m", description: "Modern temple with glass skywalk offering panoramic views.", festivals: ["Modern celebrations", "Tourism festivals"], features: ["sky walk", "panoramic views"], icon: "🏔️", bestSeason: "Clear weather days", permitRequired: false, photos: ["pelling1.jpg"] },
+            { name: "Sangachoeling Monastery", lat: 27.2100, lng: 88.2450, region: "west", type: "nyingma", accessibility: "difficult", founded: 1697, altitude: "2100m", description: "Second oldest monastery meaning 'Island of Esoteric Teaching'.", festivals: ["Ancient ceremonies", "Esoteric teachings"], features: ["second oldest", "esoteric teachings"], icon: "⛩️", bestSeason: "Mar-May, Oct-Nov", permitRequired: false, photos: ["sangachoeling1.jpg"] },
+            { name: "Dentam Valley Meditation Center", lat: 27.1750, lng: 88.2200, region: "west", type: "meditation", accessibility: "easy", founded: 2000, altitude: "1600m", description: "Modern meditation center focusing on mindfulness.", festivals: ["Meditation retreats", "Wellness ceremonies"], features: ["meditation focus", "wellness programs"], icon: "📚", bestSeason: "Year-round", permitRequired: false, photos: ["dentamvalley1.jpg"] },
+            { name: "Khangchendzonga National Park Temple", lat: 27.5833, lng: 88.1667, region: "west", type: "mixed", accessibility: "difficult", founded: 1977, altitude: "3500m", description: "Sacred site within UNESCO World Heritage national park.", festivals: ["Conservation ceremonies", "World Heritage Day"], features: ["national park", "UNESCO site", "biodiversity"], icon: "🏔️", bestSeason: "May-Oct", permitRequired: true, photos: ["nationalpark1.jpg"] },
+            { name: "Yuksam Sacred Grove", lat: 27.3600, lng: 88.2100, region: "west", type: "mixed", accessibility: "easy", founded: 1642, altitude: "1780m", description: "Sacred grove where three lamas met to establish Sikkim kingdom.", festivals: ["Kingdom Foundation Day", "Three Lamas Festival"], features: ["sacred grove", "kingdom foundation"], icon: "📚", bestSeason: "Year-round", permitRequired: false, photos: ["yuksamgrove1.jpg"] },
+
+            // North Sikkim (19 monasteries)
+            { name: "Lachung Monastery", lat: 27.6833, lng: 88.7333, region: "north", type: "nyingma", accessibility: "difficult", founded: 1880, altitude: "2700m", description: "High-altitude monastery in Lachung valley.", festivals: ["Losar", "Saga Dawa"], features: ["high altitude", "valley views"], icon: "🏔️", bestSeason: "May-Oct", permitRequired: true, photos: ["lachung1.jpg"] },
+            { name: "Lachen Monastery", lat: 27.7167, lng: 88.6833, region: "north", type: "nyingma", accessibility: "difficult", founded: 1890, altitude: "2800m", description: "Ancient monastery serving Lachen valley, gateway to Gurudongmar Lake.", festivals: ["Losar", "Local festivals"], features: ["ancient traditions", "lake proximity"], icon: "🏔️", bestSeason: "May-Oct", permitRequired: true, photos: ["lachen1.jpg"] },
+            { name: "Thangu Monastery", lat: 27.7833, lng: 88.7167, region: "north", type: "gelug", accessibility: "difficult", founded: 1920, altitude: "4000m", description: "One of highest monasteries near Tibetan border.", festivals: ["Losar", "High altitude ceremonies"], features: ["highest altitude", "border location"], icon: "🏔️", bestSeason: "May-Sept", permitRequired: true, photos: ["thangu1.jpg"] },
+            { name: "Chungthang Monastery", lat: 27.5833, lng: 88.6333, region: "north", type: "nyingma", accessibility: "moderate", founded: 1950, altitude: "1800m", description: "Monastery at confluence of two rivers.", festivals: ["Losar", "River blessing ceremonies"], features: ["river confluence", "strategic location"], icon: "⛩️", bestSeason: "Mar-Nov", permitRequired: true, photos: ["chungthang1.jpg"] },
+            { name: "Singhik Monastery", lat: 27.5333, lng: 88.5833, region: "north", type: "kagyu", accessibility: "easy", founded: 1960, altitude: "1500m", description: "Monastery famous for sunrise views of Kanchenjunga.", festivals: ["Kagyed", "Sunrise ceremonies"], features: ["sunrise views", "kanchenjunga views"], icon: "🏔️", bestSeason: "Clear weather days", permitRequired: false, photos: ["singhik1.jpg", "singhik2.jpg"] },
+            { name: "Mangan Monastery", lat: 27.5167, lng: 88.5333, region: "north", type: "gelug", accessibility: "easy", founded: 1975, altitude: "1200m", description: "District monastery serving as religious center for North Sikkim.", festivals: ["Losar", "Monlam"], features: ["district center", "administrative importance"], icon: "⛩️", bestSeason: "Year-round", permitRequired: false, photos: ["mangan1.jpg"] },
+            { name: "Gurudongmar Temple", lat: 28.0333, lng: 88.7000, region: "north", type: "sikh", accessibility: "difficult", founded: 1970, altitude: "5183m", description: "High-altitude temple near sacred lake, one of highest in world.", festivals: ["Guru Nanak Jayanti", "Lake ceremonies"], features: ["highest lake", "extreme altitude"], icon: "🏔️", bestSeason: "May-Sept", permitRequired: true, photos: ["gurudongmar1.jpg", "gurudongmar2.jpg"] },
+            { name: "Yumthang Valley Temple", lat: 27.8167, lng: 88.7500, region: "north", type: "mixed", accessibility: "difficult", founded: 1980, altitude: "3500m", description: "Temple in Valley of Flowers, known for alpine blooms.", festivals: ["Flower festivals", "Spring celebrations"], features: ["valley of flowers", "alpine blooms"], icon: "🏔️", bestSeason: "Apr-June", permitRequired: true, photos: ["yumthang1.jpg", "yumthang2.jpg"] },
+            { name: "Zero Point Meditation Center", lat: 27.8500, lng: 88.8000, region: "north", type: "mixed", accessibility: "difficult", founded: 1990, altitude: "4200m", description: "Meditation center at Zero Point, end of motorable road.", festivals: ["Meditation retreats", "Silence ceremonies"], features: ["extreme location", "meditation focus"], icon: "📚", bestSeason: "May-Sept", permitRequired: true, photos: ["zeropoint1.jpg"] },
+            { name: "Dzongu Lepcha Monastery", lat: 27.4500, lng: 88.4500, region: "north", type: "lepcha", accessibility: "moderate", founded: 1800, altitude: "1600m", description: "Traditional Lepcha monastery in protected reserve.", festivals: ["Lepcha New Year", "Tribal festivals"], features: ["lepcha reserve", "tribal traditions"], icon: "📚", bestSeason: "Oct-Mar", permitRequired: true, photos: ["dzongu1.jpg"] },
+            { name: "Kabi Longstok", lat: 27.4300, lng: 88.5800, region: "north", type: "historical", accessibility: "easy", founded: 1642, altitude: "1400m", description: "Historic site of blood brotherhood pact.", festivals: ["Unity Day", "Friendship Festival"], features: ["historical pact site", "community unity"], icon: "📚", bestSeason: "Year-round", permitRequired: false, photos: ["kabilong1.jpg"] },
+            { name: "Phensang Monastery", lat: 27.6000, lng: 88.6500, region: "north", type: "nyingma", accessibility: "moderate", founded: 1920, altitude: "2200m", description: "Mountain monastery known for medicinal plant cultivation.", festivals: ["Medicine Buddha Festival", "Herb Blessing"], features: ["medicinal plants", "healing traditions"], icon: "⛩️", bestSeason: "May-Oct", permitRequired: true, photos: ["phensang1.jpg"] },
+            { name: "Shingba Rhododendron Sanctuary Temple", lat: 27.7500, lng: 88.7000, region: "north", type: "mixed", accessibility: "difficult", founded: 1984, altitude: "3200m", description: "Sacred site within rhododendron sanctuary.", festivals: ["Rhododendron Festival", "Biodiversity Day"], features: ["rhododendron sanctuary", "highest diversity"], icon: "🏔️", bestSeason: "Apr-May", permitRequired: true, photos: ["shingba1.jpg"] },
+            { name: "Muguthang Valley Meditation Retreat", lat: 27.8000, lng: 88.6000, region: "north", type: "mixed", accessibility: "difficult", founded: 1995, altitude: "4200m", description: "High-altitude meditation retreat near Tibet border.", festivals: ["Silent Retreats", "Border Peace Prayers"], features: ["extreme altitude", "tibet border"], icon: "📚", bestSeason: "May-Sept", permitRequired: true, photos: ["muguthang1.jpg"] },
+            { name: "Chopta Valley Sacred Site", lat: 27.7200, lng: 88.6800, region: "north", type: "mixed", accessibility: "difficult", founded: 1985, altitude: "4000m", description: "Sacred valley site used by Buddhist and Sikh pilgrims.", festivals: ["Multi-faith Gatherings", "Valley Blessings"], features: ["multi-faith site", "valley location"], icon: "🎭", bestSeason: "May-Sept", permitRequired: true, photos: ["chopta1.jpg"] },
+            { name: "Lhonak Valley Hermitage", lat: 27.9000, lng: 88.7200, region: "north", type: "nyingma", accessibility: "difficult", founded: 1950, altitude: "4500m", description: "Remote hermitage for long meditation retreats.", festivals: ["Retreat Completions", "Hermit Blessings"], features: ["hermitage", "long retreats"], icon: "📚", bestSeason: "May-Sept", permitRequired: true, photos: ["lhonak1.jpg"] },
+            { name: "Plateau Meditation Point", lat: 27.8300, lng: 88.7800, region: "north", type: "mixed", accessibility: "difficult", founded: 1992, altitude: "4100m", description: "Open-air meditation platform with 360-degree views.", festivals: ["Sky Meditation", "Mountain Prayers"], features: ["360-degree views", "open-air platform"], icon: "🏔️", bestSeason: "May-Sept", permitRequired: true, photos: ["plateau1.jpg"] },
+            { name: "Green Lake Base Temple", lat: 27.9500, lng: 88.6500, region: "north", type: "mixed", accessibility: "difficult", founded: 1988, altitude: "4300m", description: "Temple at base of trek to sacred Green Lake.", festivals: ["Lake Pilgrimage", "Trekker Blessings"], features: ["green lake access", "trekking base"], icon: "🏔️", bestSeason: "May-Sept", permitRequired: true, photos: ["greenlake1.jpg"] },
+            { name: "Tso Lhamo Sacred Lake Shrine", lat: 28.1000, lng: 88.7500, region: "north", type: "mixed", accessibility: "difficult", founded: 1975, altitude: "5300m", description: "Highest lake shrine in Sikkim.", festivals: ["Lake Pilgrimage", "High Altitude Prayers"], features: ["highest shrine", "sacred lake"], icon: "🏔️", bestSeason: "May-Aug", permitRequired: true, photos: ["tsolhamo1.jpg"] },
+
+            // South Sikkim (18 monasteries)
+            { name: "Namchi Char Dham", lat: 27.1667, lng: 88.3667, region: "south", type: "hindu", accessibility: "easy", founded: 2011, altitude: "1675m", description: "Replica of four sacred Hindu pilgrimage sites with giant Hanuman statue.", festivals: ["Ram Navami", "Hanuman Jayanti", "Diwali"], features: ["giant statue", "pilgrimage replica"], icon: "⛩️", bestSeason: "Oct-Mar", permitRequired: false, photos: ["namchi1.jpg", "namchi2.jpg"] },
+            { name: "Samdruptse Hill Monastery", lat: 27.1833, lng: 88.3833, region: "south", type: "mixed", accessibility: "easy", founded: 1998, altitude: "2100m", description: "Features tallest statue of Guru Padmasambhava in the world.", festivals: ["Guru Rinpoche Birthday", "Buddha Purnima"], features: ["tallest statue", "panoramic views"], icon: "🏔️", bestSeason: "Clear weather days", permitRequired: false, photos: ["samdruptse1.jpg", "samdruptse2.jpg"] },
+            { name: "Tendong Hill Monastery", lat: 27.1500, lng: 88.4000, region: "south", type: "mixed", accessibility: "moderate", founded: 1960, altitude: "2600m", description: "Sacred hill monastery central to Lepcha mythology.", festivals: ["Tendong Lho Rum Faat", "Local tribal festivals"], features: ["lepcha traditions", "mythology"], icon: "🎭", bestSeason: "Oct-Mar", permitRequired: false, photos: ["tendong1.jpg"] },
+            { name: "Ralang Monastery", lat: 27.1667, lng: 88.3333, region: "south", type: "kagyu", accessibility: "easy", founded: 1768, altitude: "1600m", description: "Historic Kagyu monastery known for masked dance festival.", festivals: ["Pang Lhabsol", "Kagyed", "Masked dances"], features: ["historic significance", "masked dances"], icon: "⛩️", bestSeason: "Sep (Pang Lhabsol), Year-round", permitRequired: false, photos: ["ralang1.jpg", "ralang2.jpg"] },
+            { name: "Borong Monastery", lat: 27.1333, lng: 88.2833, region: "south", type: "nyingma", accessibility: "moderate", founded: 1880, altitude: "1800m", description: "Monastery known for hot springs and spiritual healing.", festivals: ["Saga Dawa", "Healing ceremonies"], features: ["hot springs", "healing practices"], icon: "📚", bestSeason: "Oct-Mar", permitRequired: false, photos: ["borong1.jpg"] },
+            { name: "Ralong Hot Springs Temple", lat: 27.1500, lng: 88.3167, region: "south", type: "mixed", accessibility: "easy", founded: 1950, altitude: "1400m", description: "Temple complex around natural hot springs with healing properties.", festivals: ["Shivaratri", "Healing festivals"], features: ["hot springs", "healing waters"], icon: "🎭", bestSeason: "Oct-Mar", permitRequired: false, photos: ["ralong1.jpg"] },
+            { name: "Maenam Hill Monastery", lat: 27.2000, lng: 88.3500, region: "south", type: "gelug", accessibility: "difficult", founded: 1900, altitude: "3200m", description: "High-altitude monastery with spectacular Himalayan views.", festivals: ["Losar", "Mountain ceremonies"], features: ["high altitude", "himalayan views"], icon: "🏔️", bestSeason: "Clear weather days", permitRequired: false, photos: ["maenam1.jpg"] },
+            { name: "Kitam Monastery", lat: 27.0833, lng: 88.3167, region: "south", type: "gelug", accessibility: "easy", founded: 1940, altitude: "1300m", description: "Border monastery near Teesta River with Bhutan views.", festivals: ["Losar", "Border ceremonies"], features: ["border location", "river proximity"], icon: "⛩️", bestSeason: "Oct-Mar", permitRequired: false, photos: ["kitam1.jpg"] },
+            { name: "Jorethang Temple Complex", lat: 27.1000, lng: 88.3833, region: "south", type: "mixed", accessibility: "easy", founded: 1965, altitude: "1000m", description: "Multi-religious complex serving diverse communities.", festivals: ["Multi-religious celebrations", "Unity festivals"], features: ["multi-religious", "community center"], icon: "🎭", bestSeason: "Year-round", permitRequired: false, photos: ["jorethang1.jpg"] },
+            { name: "Legship Monastery", lat: 27.1667, lng: 88.2667, region: "south", type: "kagyu", accessibility: "easy", founded: 1920, altitude: "1100m", description: "Monastery known for traditional medicine preparation.", festivals: ["Medicine Buddha ceremonies", "Healing festivals"], features: ["traditional medicine", "healing practices"], icon: "📚", bestSeason: "Year-round", permitRequired: false, photos: ["legship1.jpg"] },
+            { name: "Temi Tea Garden Temple", lat: 27.1500, lng: 88.3000, region: "south", type: "mixed", accessibility: "easy", founded: 1975, altitude: "1800m", description: "Temple within Sikkim's only tea garden.", festivals: ["Harvest festivals", "Tea blessing ceremonies"], features: ["tea garden", "agricultural blessings"], icon: "🎭", bestSeason: "Mar-May, Oct-Dec", permitRequired: false, photos: ["temi1.jpg"] },
+            { name: "Kewzing Monastery", lat: 27.1833, lng: 88.3500, region: "south", type: "gelug", accessibility: "easy", founded: 1955, altitude: "1400m", description: "Community monastery serving multiple villages.", festivals: ["Community festivals", "Regular prayers"], features: ["community service", "multi-village"], icon: "⛩️", bestSeason: "Year-round", permitRequired: false, photos: ["kewzing1.jpg"] },
+            { name: "Ravangla Buddha Park", lat: 27.1900, lng: 88.3700, region: "south", type: "mixed", accessibility: "easy", founded: 2006, altitude: "2100m", description: "Modern Buddhist park with 130-foot Buddha statue.", festivals: ["Buddha Purnima", "Meditation Retreats"], features: ["giant buddha statue", "meditation park"], icon: "⛩️", bestSeason: "Clear weather days", permitRequired: false, photos: ["ravangla1.jpg", "ravangla2.jpg"] },
+            { name: "Bon Monastery Ravangla", lat: 27.1950, lng: 88.3650, region: "south", type: "bon", accessibility: "easy", founded: 2009, altitude: "2050m", description: "Bon tradition monastery showcasing ancient Tibetan practices.", festivals: ["Bon New Year", "Bon Rituals"], features: ["bon tradition", "ancient practices"], icon: "📚", bestSeason: "Year-round", permitRequired: false, photos: ["bon1.jpg"] },
+            { name: "Solophok Chardham", lat: 27.1700, lng: 88.3600, region: "south", type: "hindu", accessibility: "easy", founded: 2015, altitude: "1800m", description: "Hindu pilgrimage complex replicating sacred Char Dham sites.", festivals: ["Char Dham Yatra", "Hindu Festivals"], features: ["pilgrimage complex", "char dham replica"], icon: "⛩️", bestSeason: "Oct-Mar", permitRequired: false, photos: ["solophok1.jpg"] },
+            { name: "Maenam Wildlife Sanctuary Temple", lat: 27.2100, lng: 88.3400, region: "south", type: "mixed", accessibility: "moderate", founded: 1987, altitude: "2800m", description: "Sacred site within wildlife sanctuary.", festivals: ["Wildlife Conservation Day", "Nature Prayers"], features: ["wildlife sanctuary", "conservation focus"], icon: "🏔️", bestSeason: "Oct-Mar", permitRequired: true, photos: ["maenamsanctuary1.jpg"] },
+            { name: "Varsey Rhododendron Sanctuary Shrine", lat: 27.0900, lng: 88.2900, region: "south", type: "mixed", accessibility: "moderate", founded: 1998, altitude: "2400m", description: "Sacred shrine within rhododendron sanctuary.", festivals: ["Rhododendron Blooming Festival", "Conservation Day"], features: ["rhododendron sanctuary", "rare species"], icon: "🏔️", bestSeason: "Apr-May", permitRequired: true, photos: ["varsey1.jpg"] },
+            { name: "Sumbuk Monastery", lat: 27.1400, lng: 88.3200, region: "south", type: "kagyu", accessibility: "easy", founded: 1975, altitude: "1500m", description: "Community monastery serving rural areas.", festivals: ["Local Kagyu Festivals", "Community Prayers"], features: ["rural service", "traditional practices"], icon: "⛩️", bestSeason: "Year-round", permitRequired: false, photos: ["sumbuk1.jpg"] }
+        ];
+
+        // Festival Calendar Data
+        const festivalCalendar = {
+            "January": [
+                { name: "Makar Sankranti", date: "14-15 Jan", locations: ["Hindu temples"], type: "hindu" },
+                { name: "Republic Day", date: "26 Jan", locations: ["All monasteries"], type: "national" }
+            ],
+            "February": [
+                { name: "Losar (Tibetan New Year)", date: "Feb (varies)", locations: ["All Buddhist monasteries"], type: "buddhist" },
+                { name: "Bumchu Festival", date: "19 Feb 2024", locations: ["Tashiding Monastery"], type: "buddhist" },
+                { name: "Shivaratri", date: "8 Mar 2024", locations: ["Hindu temples"], type: "hindu" }
+            ],
+            "March": [
+                { name: "Holi", date: "25 Mar 2024", locations: ["Hindu temples"], type: "hindu" },
+                { name: "Chaite Dashain", date: "Apr 2024", locations: ["Hindu temples"], type: "hindu" }
+            ],
+            "April": [
+                { name: "Ram Navami", date: "17 Apr 2024", locations: ["Namchi Char Dham"], type: "hindu" },
+                { name: "Hanuman Jayanti", date: "23 Apr 2024", locations: ["Hanuman Tok", "Namchi"], type: "hindu" },
+                { name: "Buddha Purnima", date: "23 May 2024", locations: ["All Buddhist monasteries"], type: "buddhist" }
+            ],
+            "May": [
+                { name: "Saga Dawa", date: "May-June", locations: ["All Buddhist monasteries"], type: "buddhist" },
+                { name: "Guru Purnima", date: "21 Jul 2024", locations: ["All monasteries"], type: "mixed" }
+            ],
+            "September": [
+                { name: "Pang Lhabsol", date: "7 Sep 2024", locations: ["Ralang Monastery"], type: "buddhist" },
+                { name: "Indra Jatra", date: "Sep 2024", locations: ["Traditional sites"], type: "cultural" }
+            ],
+            "October": [
+                { name: "Diwali", date: "1 Nov 2024", locations: ["Hindu temples"], type: "hindu" },
+                { name: "Tihar", date: "Oct-Nov", locations: ["All communities"], type: "cultural" }
+            ],
+            "November": [
+                { name: "Guru Nanak Jayanti", date: "15 Nov 2024", locations: ["Gurudongmar Temple"], type: "sikh" },
+                { name: "Bhai Tika", date: "Nov 2024", locations: ["All communities"], type: "cultural" }
+            ],
+            "December": [
+                { name: "Christmas", date: "25 Dec", locations: ["Christian sites"], type: "christian" },
+                { name: "New Year Eve", date: "31 Dec", locations: ["Tourist spots"], type: "modern" }
+            ]
+        };
+
+        // Weather Data
+        const weatherData = {
+            current: {
+                temperature: 18,
+                condition: "Partly Cloudy",
+                humidity: 65,
+                windSpeed: 12,
+                visibility: "Good"
+            },
+            forecast: [
+                { day: "Today", high: 22, low: 12, condition: "Partly Cloudy", icon: "⛅" },
+                { day: "Tomorrow", high: 25, low: 14, condition: "Sunny", icon: "☀️" },
+                { day: "Day 3", high: 20, low: 10, condition: "Light Rain", icon: "🌦️" },
+                { day: "Day 4", high: 18, low: 8, condition: "Cloudy", icon: "☁️" },
+                { day: "Day 5", high: 23, low: 13, condition: "Clear", icon: "🌤️" }
+            ],
+            altitude_warnings: {
+                "3000m+": "Possible altitude sickness. Acclimatize gradually.",
+                "4000m+": "High altitude - medical clearance recommended.",
+                "5000m+": "Extreme altitude - expert guidance mandatory."
+            }
+        };
+
+        // Cultural Information
+        const culturalInfo = {
+            traditions: {
+                "Gelug": {
+                    description: "The Yellow Hat school of Tibetan Buddhism, founded by Je Tsongkhapa. Emphasizes scholarly study and gradual path to enlightenment.",
+                    practices: ["Detailed philosophical study", "Debate traditions", "Graduated meditation"],
+                    monasteries: ["Rumtek", "Enchey", "Pemayangtse"]
+                },
+                "Nyingma": {
+                    description: "The oldest school of Tibetan Buddhism, preserving the earliest traditions brought from India.",
+                    practices: ["Dzogchen meditation", "Terma teachings", "Rainbow body achievement"],
+                    monasteries: ["Tashiding", "Sanga Choeling", "Yuksom"]
+                },
+                "Kagyu": {
+                    description: "The oral transmission school emphasizing meditation and the direct experience of Buddha nature.",
+                    practices: ["Mahamudra meditation", "Six Yogas of Naropa", "Guru devotion"],
+                    monasteries: ["Ralang", "Lingdum", "Gonjang"]
+                },
+                "Bon": {
+                    description: "The ancient spiritual tradition of Tibet that predates Buddhism, focusing on harmony with nature.",
+                    practices: ["Nature worship", "Shamanic rituals", "Energy healing"],
+                    monasteries: ["Bon Monastery Ravangla"]
+                }
+            },
+            etiquette: [
+                "Remove shoes before entering prayer halls",
+                "Walk clockwise around stupas and sacred sites",
+                "Don't point feet toward altars or sacred objects",
+                "Photography may be restricted in certain areas",
+                "Maintain respectful silence during prayers",
+                "Dress modestly with covered shoulders and legs",
+                "Turn prayer wheels clockwise while chanting Om Mani Padme Hum"
+            ]
+        };
+
+        // Global Variables
+        let map;
+        let markers = [];
+        let filteredMonasteries = [...monasteries];
+        let searchTimeout;
+        let visitPlan = [];
+        let isSatelliteView = false;
+        let searchSuggestions = [];
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            setupEventListeners();
+            generateSearchSuggestions();
+            updateStats();
+            updateWeatherDisplay();
+            hideLoadingOverlay();
+        });
+
+        // Map Initialization
+        function initMap() {
+            try {
+                map = L.map('map', {
+                    center: [27.3389, 88.6139],
+                    zoom: 9,
+                    zoomControl: true,
+                    attributionControl: true
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 18,
+                    minZoom: 6
+                }).addTo(map);
+
+                loadMonasteries(monasteries);
+                map.on('zoomend', updateVisibleCount);
+                map.on('moveend', updateVisibleCount);
+
+            } catch (error) {
+                console.error('Map initialization failed:', error);
+                handleMapError();
+            }
+        }
+
+        function handleMapError() {
+            // Stub for error handling
+            alert('Failed to load map. Please check your internet connection.');
+        }
+
+        function createCustomMarker(monastery) {
+            const iconHtml = `<div class="monastery-marker" style="font-size: 28px; text-align: center;">${monastery.icon}</div>`;
+            return L.divIcon({
+                html: iconHtml,
+                className: 'custom-monastery-icon',
+                iconSize: [35, 35],
+                iconAnchor: [17, 17],
+                popupAnchor: [0, -17]
+            });
+        }
+
+        function createPopupContent(monastery) {
+            const festivalTags = monastery.festivals.map(festival => {
+                const festivalType = getFestivalType(festival);
+                return `<span class="festival-tag ${festivalType}">${festival}</span>`;
+            }).join('');
+
+            const permitStatus = monastery.permitRequired ? 
+                '<div style="color: #ef4444; font-weight: 600;">🔒 Permit Required</div>' : 
+                '<div style="color: #10b981; font-weight: 600;">✅ No Permit Required</div>';
+
+            const imageHtml = monastery.photos && monastery.photos.length > 0 ? 
+                `<img src="${monastery.photos[0]}" alt="${monastery.name}" class="popup-image">` : '';
+
+            return `
+                <div class="popup-header">${monastery.icon} ${monastery.name}</div>
+                ${imageHtml}
+                <div class="popup-info"><strong>📍</strong> ${monastery.region.charAt(0).toUpperCase() + monastery.region.slice(1)} Sikkim</div>
+                <div class="popup-info"><strong>🗓️</strong> Founded ${monastery.founded} CE</div>
+                <div class="popup-info"><strong>⛰️</strong> ${monastery.altitude}</div>
+                <div class="popup-info"><strong>🚶</strong> ${monastery.accessibility.charAt(0).toUpperCase() + monastery.accessibility.slice(1)} access</div>
+                <div class="popup-info"><strong>📅</strong> Best: ${monastery.bestSeason}</div>
+                ${permitStatus}
+                <div class="popup-description">${monastery.description}</div>
+                <div class="popup-festivals">
+                    <strong>🎭 Festivals:</strong><br>
+                    ${festivalTags}
+                </div>
+                <div class="popup-info"><strong>✨ Features:</strong> ${monastery.features.join(', ')}</div>
+                <div class="popup-buttons">
+                    <button class="popup-btn primary" onclick="viewDetails('${monastery.name.replace(/'/g, "\\'")}')">🔍 Details</button>
+                    <button class="popup-btn secondary" onclick="addToItinerary('${monastery.name.replace(/'/g, "\\'")}')">➕ Add to Plan</button>
+                </div>
+            `;
+        }
+
+        function getFestivalType(festival) {
+            const buddhist = ['Losar', 'Saga Dawa', 'Buddha Purnima', 'Kagyed', 'Bumchu', 'Cham Dance', 'Monlam', 'Pang Lhabsol'];
+            const hindu = ['Diwali', 'Ram Navami', 'Hanuman Jayanti', 'Shivaratri', 'Ganesh Chaturthi', 'Chhath Puja', 'Char Dham Yatra'];
+            const sikh = ['Guru Nanak Jayanti', 'Guru Purnima'];
+            
+            if (buddhist.some(f => festival.toLowerCase().includes(f.toLowerCase()))) return 'buddhist';
+            if (hindu.some(f => festival.toLowerCase().includes(f.toLowerCase()))) return 'hindu';
+            if (sikh.some(f => festival.toLowerCase().includes(f.toLowerCase()))) return 'sikh';
+            return 'mixed';
+        }
+
+        function loadMonasteries(monasteryList) {
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            monasteryList.forEach((monastery) => {
+                const marker = L.marker([monastery.lat, monastery.lng], {
+                    icon: createCustomMarker(monastery)
+                }).addTo(map);
+
+                marker.bindPopup(createPopupContent(monastery), {
+                    maxWidth: 350,
+                    closeButton: true
+                });
+
+                markers.push(marker);
+            });
+
+            updateStats();
+            updateVisibleCount();
+        }
+
+        // Search and Filter Functions
+        function generateSearchSuggestions() {
+            const suggestions = new Set();
+            monasteries.forEach(monastery => {
+                suggestions.add(monastery.name);
+                suggestions.add(monastery.region + ' Sikkim');
+                suggestions.add(monastery.type);
+                monastery.festivals.forEach(f => suggestions.add(f));
+                monastery.features.forEach(f => suggestions.add(f));
+            });
+            searchSuggestions = Array.from(suggestions).sort();
+        }
+
+        function filterMonasteries() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const activeRegion = getActiveFilter('region');
+            const activeType = getActiveFilter('type');
+            const activeAccess = getActiveFilter('access');
+
+            filteredMonasteries = monasteries.filter(monastery => {
+                const matchesSearch = !searchTerm || 
+                    monastery.name.toLowerCase().includes(searchTerm) ||
+                    monastery.description.toLowerCase().includes(searchTerm) ||
+                    monastery.festivals.some(f => f.toLowerCase().includes(searchTerm)) ||
+                    monastery.region.toLowerCase().includes(searchTerm) ||
+                    monastery.type.toLowerCase().includes(searchTerm) ||
+                    monastery.features.some(f => f.toLowerCase().includes(searchTerm));
+
+                const matchesRegion = activeRegion === 'all' || monastery.region === activeRegion;
+                const matchesType = activeType === 'all' || monastery.type === activeType;
+                const matchesAccess = activeAccess === 'all' || monastery.accessibility === activeAccess;
+
+                return matchesSearch && matchesRegion && matchesType && matchesAccess;
+            });
+
+            updateSearchStyling(searchTerm);
+            loadMonasteries(filteredMonasteries);
+            updateSearchResults();
+            autoFitBounds();
+        }
+
+        function updateSearchStyling(searchTerm) {
+            const searchInput = document.getElementById('search-input');
+            if (searchTerm && filteredMonasteries.length === 0) {
+                searchInput.classList.add('search-error');
+                searchInput.classList.remove('search-success');
+            } else if (searchTerm && filteredMonasteries.length > 0) {
+                searchInput.classList.add('search-success');
+                searchInput.classList.remove('search-error');
+            } else {
+                searchInput.classList.remove('search-success', 'search-error');
+            }
+        }
+
+        function autoFitBounds() {
+            if (filteredMonasteries.length > 0 && filteredMonasteries.length < monasteries.length) {
+                setTimeout(() => {
+                    if (markers.length > 0) {
+                        const group = new L.featureGroup(markers);
+                        map.fitBounds(group.getBounds().pad(0.1));
+                    }
+                }, 100);
+            }
+        }
+
+        function getActiveFilter(category) {
+            const activeBtn = document.querySelector(`#${category}-filters .filter-btn.active`);
+            return activeBtn ? activeBtn.dataset[category] : 'all';
+        }
+
+        // Event Listeners Setup
+        function setupEventListeners() {
+            setupSearchListeners();
+            setupFilterButtons();
+        }
+
+        function setupSearchListeners() {
+            const searchInput = document.getElementById('search-input');
+            const suggestions = document.getElementById('search-suggestions');
+
+            searchInput.addEventListener('input', (e) => {
+                const value = e.target.value.toLowerCase();
+                
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(filterMonasteries, 300);
+
+                if (value.length > 1) {
+                    const matches = searchSuggestions.filter(s => 
+                        s.toLowerCase().includes(value)
+                    ).slice(0, 5);
+
+                    if (matches.length > 0) {
+                        suggestions.innerHTML = matches.map(match => 
+                            `<div class="suggestion-item" onclick="selectSuggestion('${match}')">${match}</div>`
+                        ).join('');
+                        suggestions.style.display = 'block';
+                    } else {
+                        suggestions.style.display = 'none';
+                    }
+                } else {
+                    suggestions.style.display = 'none';
+                }
+            });
+
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => suggestions.style.display = 'none', 200);
+            });
+        }
+
+        function setupFilterButtons() {
+            const filterCategories = ['region', 'type', 'access'];
+            
+            filterCategories.forEach(category => {
+                const buttons = document.querySelectorAll(`#${category}-filters .filter-btn`);
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        buttons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        if (category === 'region' && btn.dataset.region !== 'all') {
+                            centerMapOnRegion(btn.dataset.region);
+                        }
+                        
+                        setTimeout(filterMonasteries, 100);
+                    });
+                });
+            });
+        }
+
+        function selectSuggestion(suggestion) {
+            document.getElementById('search-input').value = suggestion;
+            document.getElementById('search-suggestions').style.display = 'none';
+            filterMonasteries();
+        }
+
+        function centerMapOnRegion(region) {
+            const regionCoords = {
+                'east': [27.3389, 88.6139],
+                'west': [27.2108, 88.2492],
+                'north': [27.6833, 88.7333],
+                'south': [27.1667, 88.3667]
+            };
+
+            if (regionCoords[region]) {
+                map.setView(regionCoords[region], 10, { animate: true });
+            }
+        }
+
+        // UI Update Functions
+        function updateSearchResults() {
+            const resultsElement = document.getElementById('search-results');
+            const count = filteredMonasteries.length;
+            resultsElement.textContent = `${count} ${count === 1 ? 'monastery' : 'monasteries'} found`;
+            resultsElement.style.color = count > 0 ? '#ffd700' : '#ef4444';
+        }
+
+        function updateStats() {
+            document.getElementById('total-monasteries').textContent = filteredMonasteries.length;
+            document.getElementById('planned-visits').textContent = visitPlan.length;
+        }
+
+        function updateVisibleCount() {
+            if (!map) return;
+            
+            const bounds = map.getBounds();
+            const visible = filteredMonasteries.filter(monastery => 
+                bounds.contains([monastery.lat, monastery.lng])
+            ).length;
+            
+            // Assuming we have an element for visible count, but in prompt it's mentioned, add if needed
+            // document.getElementById('visible-count').textContent = visible;
+        }
+
+        function updateWeatherDisplay() {
+            document.getElementById('weather-temp').textContent = `${weatherData.current.temperature}°C`;
+        }
+
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.style.display = 'none', 500);
+            }
+        }
+
+        // Modal Functions
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Feature Functions
+        function showFestivalCalendar() {
+            const content = document.getElementById('festival-content');
+            let html = '<div style="max-height: 400px; overflow-y: auto;">';
+            
+            Object.keys(festivalCalendar).forEach(month => {
+                html += `<h3 style="color: #667eea; margin: 20px 0 10px 0;">${month} 2024</h3>`;
+                festivalCalendar[month].forEach(festival => {
+                    const typeClass = festival.type;
+                    html += `
+                        <div style="background: rgba(255,255,255,0.1); padding: 12px; margin: 8px 0; border-radius: 8px; border-left: 4px solid #667eea;">
+                            <div style="font-weight: 600; margin-bottom: 4px;">
+                                <span class="festival-tag ${typeClass}">${festival.name}</span>
+                            </div>
+                            <div style="font-size: 13px; opacity: 0.8;">📅 ${festival.date}</div>
+                            <div style="font-size: 13px; opacity: 0.8;">📍 ${festival.locations.join(', ')}</div>
+                        </div>
+                    `;
+                });
+            });
+            
+            html += '</div>';
+            content.innerHTML = html;
+            showModal('festival-modal');
+        }
+
+        function showWeatherInfo() {
+            const content = document.getElementById('weather-content');
+            let html = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="color: #667eea;">Current Weather in Gangtok</h3>
+                    <div style="font-size: 48px; margin: 20px 0;">${weatherData.current.temperature}°C</div>
+                    <div style="font-size: 18px; opacity: 0.8;">${weatherData.current.condition}</div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px;">
+                    <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px;">
+                        <div style="font-size: 14px; opacity: 0.7;">Humidity</div>
+                        <div style="font-size: 20px; font-weight: 600;">${weatherData.current.humidity}%</div>
+                    </div>
+                    <div style="text-align: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px;">
+                        <div style="font-size: 14px; opacity: 0.7;">Wind Speed</div>
+                        <div style="font-size: 20px; font-weight: 600;">${weatherData.current.windSpeed} km/h</div>
+                    </div>
+                </div>
+                
+                <h4 style="color: #667eea; margin-bottom: 15px;">5-Day Forecast</h4>
+                <div style="display: flex; gap: 10px; overflow-x: auto;">
+            `;
+            
+            weatherData.forecast.forEach(day => {
+                html += `
+                    <div style="min-width: 120px; text-align: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px;">
+                        <div style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">${day.day}</div>
+                        <div style="font-size: 24px; margin: 10px 0;">${day.icon}</div>
+                        <div style="font-size: 14px; font-weight: 600;">${day.high}° / ${day.low}°</div>
+                        <div style="font-size: 11px; opacity: 0.7; margin-top: 5px;">${day.condition}</div>
+                    </div>
+                `;
+            });
+            
+            html += `</div>
+                <div style="margin-top: 25px; padding: 15px; background: rgba(255,215,0,0.1); border-radius: 12px; border: 1px solid rgba(255,215,0,0.3);">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">⚠️ Altitude Warnings</h4>
+            `;
+            
+            Object.keys(weatherData.altitude_warnings).forEach(altitude => {
+                html += `<div style="margin-bottom: 8px; font-size: 13px;"><strong>${altitude}:</strong> ${weatherData.altitude_warnings[altitude]}</div>`;
+            });
+            
+            html += '</div>';
+            content.innerHTML = html;
+            showModal('weather-modal');
+        }
+
+        function showVisitPlanner() {
+            const content = document.getElementById('planner-content');
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">Your Itinerary (${visitPlan.length} monasteries)</h3>
+                    ${visitPlan.length === 0 ? 
+                        '<p style="opacity: 0.7; text-align: center; padding: 20px;">No monasteries added yet. Click "Add to Plan" on monastery popups to start planning!</p>' : 
+                        '<div id="itinerary-list"></div>'
+                    }
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                    <button onclick="generateOptimalRoute()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 16px; border-radius: 12px; cursor: pointer;">🗺️ Optimize Route</button>
+                    <button onclick="exportItinerary()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 12px 16px; border-radius: 12px; cursor: pointer;">📤 Export Plan</button>
+                    <button onclick="clearItinerary()" style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); padding: 12px 16px; border-radius: 12px; cursor: pointer;">🗑️ Clear All</button>
+                    <button onclick="showSeasonalRecommendations()" style="background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.3); padding: 12px 16px; border-radius: 12px; cursor: pointer;">🌿 Seasonal Tips</button>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            updateItineraryDisplay();
+            showModal('planner-modal');
+        }
+
+        function updateItineraryDisplay() {
+            const listElement = document.getElementById('itinerary-list');
+            if (!listElement || visitPlan.length === 0) return;
+            
+            let html = '';
+            visitPlan.forEach((monasteryName, index) => {
+                const monastery = monasteries.find(m => m.name === monasteryName);
+                if (monastery) {
+                    html += `
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; margin: 10px 0; border-radius: 12px; border-left: 4px solid #667eea;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="flex: 1;">
+                                    <h4 style="color: #ffd700; margin-bottom: 5px;">${index + 1}. ${monastery.icon} ${monastery.name}</h4>
+                                    <div style="font-size: 12px; opacity: 0.8;">📍 ${monastery.region.charAt(0).toUpperCase() + monastery.region.slice(1)} Sikkim | ⛰️ ${monastery.altitude}</div>
+                                    <div style="font-size: 12px; opacity: 0.8;">🚶 ${monastery.accessibility} access | 📅 Best: ${monastery.bestSeason}</div>
+                                    ${monastery.permitRequired ? '<div style="color: #ef4444; font-size: 11px; font-weight: 600;">🔒 Permit Required</div>' : ''}
+                                </div>
+                                <button onclick="removeFromItinerary('${monastery.name}')" style="background: rgba(239,68,68,0.2); color: #ef4444; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-left: 10px;">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            listElement.innerHTML = html;
+        }
+
+        function showCulturalInfo() {
+            const content = document.getElementById('cultural-content');
+            let html = '<div style="max-height: 500px; overflow-y: auto;">';
+            
+            html += '<h3 style="color: #667eea; margin-bottom: 20px;">Buddhist Traditions in Sikkim</h3>';
+            
+            Object.keys(culturalInfo.traditions).forEach(tradition => {
+                const info = culturalInfo.traditions[tradition];
+                html += `
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; margin: 15px 0; border-radius: 15px;">
+                        <h4 style="color: #ffd700; margin-bottom: 10px;">${tradition} School</h4>
+                        <p style="margin-bottom: 15px; line-height: 1.6;">${info.description}</p>
+                        <div style="margin-bottom: 15px;">
+                            <strong style="color: #667eea;">Key Practices:</strong>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                ${info.practices.map(practice => `<li style="margin-bottom: 4px;">${practice}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div>
+                            <strong style="color: #667eea;">Featured Monasteries:</strong>
+                            <div style="margin-top: 8px;">
+                                ${info.monasteries.map(m => `<span style="background: rgba(102,126,234,0.2); padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px; display: inline-block;">${m}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                <div style="background: rgba(255,215,0,0.1); padding: 20px; margin: 20px 0; border-radius: 15px; border: 1px solid rgba(255,215,0,0.3);">
+                    <h4 style="color: #ffd700; margin-bottom: 15px;">🙏 Monastery Etiquette</h4>
+                    <ul style="margin-left: 0; padding-left: 0; list-style: none;">
+                        ${culturalInfo.etiquette.map(rule => `<li style="margin-bottom: 8px; padding-left: 20px; position: relative;"><span style="position: absolute; left: 0;">•</span>${rule}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>`;
+            
+            content.innerHTML = html;
+            showModal('cultural-modal');
+        }
+
+        function showSeasonalInfo() {
+            const currentMonth = new Date().getMonth() + 1;
+            let seasonalAdvice = '';
+            
+            if (currentMonth >= 3 && currentMonth <= 5) {
+                seasonalAdvice = '🌸 Spring (March-May): Perfect for rhododendron blooms! Visit Barsey and Shingba sanctuaries. Clear mountain views and pleasant weather.';
+            } else if (currentMonth >= 6 && currentMonth <= 8) {
+                seasonalAdvice = '🌧️ Monsoon (June-August): Limited access to high-altitude sites. Focus on lower elevation monasteries. Lush green landscapes.';
+            } else if (currentMonth >= 9 && currentMonth <= 11) {
+                seasonalAdvice = '🍂 Autumn (September-November): Best overall weather! All monasteries accessible. Clear skies and excellent photography conditions.';
+            } else {
+                seasonalAdvice = '❄️ Winter (December-February): Limited high-altitude access. Perfect for lower elevation sites. Losar celebrations in February.';
+            }
+            
+            alert(`Seasonal Guidance:\n\n${seasonalAdvice}\n\n💡 Tip: Check individual monastery seasonal recommendations in their details.`);
+        }
+
+        function showAccessibilityGuide() {
+            alert(`♿ Accessibility Guide:\n\n🟢 Easy Access: Regular roads, parking available, minimal walking\n🟡 Moderate Trek: 1-3 hours walking, some steep sections\n🔴 Challenging: 3+ hours, high altitude, expert guidance needed\n\n💡 Note: Weather and road conditions can affect accessibility. Always check current conditions before visiting.`);
+        }
+
+        function showPhotoGallery() {
+            const content = document.getElementById('gallery-content');
+            content.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">📸</div>
+                    <h3 style="color: #667eea; margin-bottom: 15px;">Photo Gallery</h3>
+                    <p style="opacity: 0.8; line-height: 1.6; max-width: 400px; margin: 0 auto;">
+                        Photo gallery feature would display beautiful images of monasteries, festivals, and landscapes. 
+                        In a full implementation, this would connect to a photo database or API.
+                    </p>
+                    <div style="margin-top: 25px;">
+                        <button onclick="closeModal('gallery-modal')" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">
+                            📱 Coming Soon
+                        </button>
+                    </div>
+                </div>
+            `;
+            showModal('gallery-modal');
+        }
+
+        // Interactive Functions
+        function showAllMonasteries() {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.filter-btn[data-region="all"], .filter-btn[data-type="all"], .filter-btn[data-access="all"]').forEach(btn => btn.classList.add('active'));
+            document.getElementById('search-input').value = '';
+            filteredMonasteries = [...monasteries];
+            loadMonasteries(filteredMonasteries);
+            resetMapView();
+        }
+
+        function filterByIcon(icon) {
+            filteredMonasteries = monasteries.filter(m => m.icon === icon);
+            loadMonasteries(filteredMonasteries);
+            updateSearchResults();
+        }
+
+        function resetMapView() {
+            map.setView([27.3389, 88.6139], 9, { animate: true });
+            document.getElementById('search-input').value = '';
+            filteredMonasteries = [...monasteries];
+            loadMonasteries(filteredMonasteries);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function toggleSatelliteView() {
+            if (isSatelliteView) {
+                map.eachLayer(layer => {
+                    if (layer._url && layer._url.includes('satellite')) {
+                        map.removeLayer(layer);
+                    }
+                });
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                isSatelliteView = false;
+            } else {
+                map.eachLayer(layer => {
+                    if (layer._url && layer._url.includes('openstreetmap')) {
+                        map.removeLayer(layer);
+                    }
+                });
+                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    attribution: '© Esri'
+                }).addTo(map);
+                isSatelliteView = true;
+            }
+        }
+
+        function showMyLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    map.setView([lat, lng], 12);
+                    
+                    L.marker([lat, lng])
+                        .addTo(map)
+                        .bindPopup('📍 Your Location')
+                        .openPopup();
+                });
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function addToItinerary(monasteryName) {
+            if (!visitPlan.includes(monasteryName)) {
+                visitPlan.push(monasteryName);
+                updateStats();
+                alert(`✅ ${monasteryName} added to your itinerary!`);
+            } else {
+                alert(`ℹ️ ${monasteryName} is already in your itinerary.`);
+            }
+        }
+
+        function removeFromItinerary(monasteryName) {
+            const index = visitPlan.indexOf(monasteryName);
+            if (index > -1) {
+                visitPlan.splice(index, 1);
+                updateStats();
+                updateItineraryDisplay();
+            }
+        }
+
+        function clearItinerary() {
+            if (confirm('Clear all planned visits?')) {
+                visitPlan = [];
+                updateStats();
+                updateItineraryDisplay();
+            }
+        }
+
+        function generateOptimalRoute() {
+            if (visitPlan.length < 2) {
+                alert('Add at least 2 monasteries to generate a route.');
+                return;
+            }
+            
+            // Simple optimization by region grouping
+            const plannedMonasteries = visitPlan.map(name => 
+                monasteries.find(m => m.name === name)
+            ).filter(Boolean);
+            
+            const regionGroups = {
+                east: plannedMonasteries.filter(m => m.region === 'east'),
+                west: plannedMonasteries.filter(m => m.region === 'west'),
+                north: plannedMonasteries.filter(m => m.region === 'north'),
+                south: plannedMonasteries.filter(m => m.region === 'south')
+            };
+            
+            // Simple order: East -> South -> West -> North
+            const optimalOrder = [
+                ...regionGroups.east,
+                ...regionGroups.south,
+                ...regionGroups.west,
+                ...regionGroups.north
+            ];
+            
+            visitPlan = optimalOrder.map(m => m.name);
+            updateItineraryDisplay();
+            alert('✅ Route optimized by region!');
+        }
+
+        function exportItinerary() {
+            if (visitPlan.length === 0) {
+                alert('No itinerary to export.');
+                return;
+            }
+            
+            let text = 'Your Sikkim Itinerary:\n\n';
+            visitPlan.forEach((name, index) => {
+                text += `${index + 1}. ${name}\n`;
+            });
+            
+            // Create a downloadable text file
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sikkim_itinerary.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showSeasonalRecommendations() {
+            alert('Seasonal recommendations: Check individual best seasons in your itinerary. Focus on lower altitudes in winter/monsoon.');
+        }
+
+        function viewDetails(name) {
+            const monastery = monasteries.find(m => m.name === name);
+            if (monastery) {
+                document.getElementById('details-title').innerHTML = `${monastery.icon} ${monastery.name}`;
+                const imageHtml = monastery.photos && monastery.photos.length > 0 ? 
+                    monastery.photos.map(photo => `<img src="${photo}" alt="${monastery.name}" style="width: 100%; height: auto; border-radius: 12px; margin-bottom: 16px;">`).join('') : '';
+                let html = `
+                    ${imageHtml}
+                    <p>${monastery.description}</p>
+                    <p>Founded: ${monastery.founded}</p>
+                    <p>Altitude: ${monastery.altitude}</p>
+                    <p>Accessibility: ${monastery.accessibility}</p>
+                    <p>Best Season: ${monastery.bestSeason}</p>
+                    <p>Permit Required: ${monastery.permitRequired ? 'Yes' : 'No'}</p>
+                    <p>Festivals: ${monastery.festivals.join(', ')}</p>
+                    <p>Features: ${monastery.features.join(', ')}</p>
+                `;
+                document.getElementById('details-content').innerHTML = html;
+                showModal('details-modal');
+            }
+        }
+    </script>
+</body>
+</html>
